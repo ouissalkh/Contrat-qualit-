@@ -1,0 +1,463 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  font-family: 'Poppins', sans-serif;
+  color: #2c3e50;
+  overflow-x: hidden;
+  height: 100vh;
+}
+/* Empêche le scroll horizontal */
+body, html {
+  overflow-x: hidden;
+}
+/* Conteneur principal */
+#contrat {
+  max-width: 100%;
+  margin: 70px auto 20px auto; /* Marge top pour navbar + bottom */
+  border-radius: 20px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.1),
+    inset 0 0 15px rgba(255,255,255,0.6);
+  background: #fefefe;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* Formulaire filtre : aligner horizontalement */
+#contrat form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* pour mobile */
+}
+
+/* Labels, éviter retour à la ligne */
+#contrat form label {
+  white-space: nowrap;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Selects */
+#contrat form select {
+  padding: 5px 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+#contrat form select:hover,
+#contrat form select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+/* Bouton filtrer, style spécifique */
+#contrat form button {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+  transition: background 0.3s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+#contrat form button:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+/* Table */
+table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 20px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+/* En-tête tableau */
+/* Style de l'en-tête du tableau */
+thead.en-tete-tableau {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  /*background: transparent; /* ✅ permet de voir le fond du tr */
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.5);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+#contrat thead.en-tete-tableau tr {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+
+thead.en-tete-tableau th {
+  /*background: linear-gradient(90deg, #667eea, #764ba2);*/
+  background: transparent;
+  color: white;
+  padding: 10px 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Supprimer la bordure sur le dernier <th> */
+thead.en-tete-tableau th:last-child {
+  border-right: none;
+}
+
+/* Largeur personnalisée de la 2e colonne */
+td:nth-child(2),
+th:nth-child(2) {
+  width: 120px;
+}
+
+/* Fond des cellules <th> du corps (si tu en as) */
+tbody th {
+  background-color: #f0f0f0;
+}
+
+/* Évite toute interférence globale */
+th:not(#contrat thead th) {
+  background-color: inherit;
+}
+
+
+
+/* Corps du tableau */
+tbody tr {
+  background: #ffffff;
+  transition: background-color 0.25s ease;
+  cursor: default;
+}
+
+tbody tr:nth-child(even) {
+  background: #f9f9fb;
+}
+
+tbody tr:hover {
+  background: #dde6f7;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(102,126,234,0.2);
+}
+
+tbody td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e1e6f9;
+  color: #34495e;
+  transition: color 0.25s ease;
+  text-align: center;
+}
+
+tbody td:first-child,
+tbody td.indicateur {
+  font-weight: 600;
+  color: #5a5a5a;
+  text-align: left;
+}
+
+/* Largeur colonne 2 */
+td:nth-child(2) {
+  width: 120px;
+}
+
+/* Styles pour KPI */
+input.kpi-min,
+input.kpi-max,
+span.kpi-min,
+span.kpi-max {
+  width: 60px;
+  box-sizing: border-box;
+  text-align: right;
+  border: none;
+  background: none;
+  outline: none;
+  display: inline-block;
+}
+
+/* Total points max */
+#total-points-max {
+  background-color: #667eea;
+  color: white;
+  font-weight: 700;
+  border-radius: 5px;
+}
+
+/* Affichage et alignement Bonus (colonne 7) 
+table th:nth-child(7),
+table td:nth-child(7) {
+  display: table-cell;
+  text-align: center;
+  min-width: 80px;
+}*/
+
+/* Colonne indicateur 
+th.indicateur, td.indicateur {
+  white-space: normal;
+  min-width: 250px;
+  width: 30%;
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 10px;
+}
+*/
+/*#contrat tbody th {
+  background-color: #f0f0f0;
+}*/
+
+
+
+/* Reset global pour margin/padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Navbar (optionnel si tu l'as) */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 5;
+  width: 90%;
+  height: 70px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  color:#333;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  animation: slideDown 0.5s ease;
+  margin-bottom: 0px;
+  z-index: 999;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 60%;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.search-box input {
+  width: 160px;
+  max-width: 100%;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  #contrat form {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+    align-items: flex-start;
+    gap: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-right {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+}
+
+/* ✅ Ne pas couper les valeurs dans les cellules */
+table th,
+table td {
+  white-space: nowrap;        /* Empêche le retour à la ligne */
+  overflow: hidden;           /* Évite débordement visuel */
+  text-overflow: ellipsis;    /* Ajoute "..." si trop long */
+  vertical-align: middle;     /* Centre verticalement */
+}
+/* ✅ Élargir certaines colonnes manuellement */
+td:nth-child(1), th:nth-child(1) { max-width: 250px; }  /* Indicateur */
+td:nth-child(2), th:nth-child(2) { min-width: 100px; }  /* Résultat */
+td:nth-child(3), th:nth-child(3) { min-width: 150px; }  /* Répartition */
+td:nth-child(4), th:nth-child(4),
+td:nth-child(5), th:nth-child(5) { min-width: 150px; }   /* KPI min/max */
+td:nth-child(6), th:nth-child(6) { min-width: 80px; }   /* Points */
+td:nth-child(7), th:nth-child(7) { min-width: 100px; }  /* Bonus */
+
+/* ✅ Assurer que la table utilise toute la largeur sans scroll */
+table {
+  width: 100%;
+  table-layout: auto;       /* Évite que certaines colonnes soient trop petites */
+}
+
+/* ✅ Conteneur principal sans scroll horizontal */
+#contrat {
+  overflow-x: visible !important;
+}
+
+#contrat table {
+  table-layout: fixed;
+  width: 100%;
+  /* min-width: 1000px; 🧠 Force le tableau à être assez large */
+}
+
+#contrat th,
+#contrat td {
+  white-space: nowrap; /* ✅ Pour que 78% reste sur une seule ligne */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#contrat td span.kpi-min,
+#contrat td span.kpi-max {
+  display: inline-block;
+  min-width: 40px;
+}
+
+#contrat td.indicateur {
+  min-width: 250px;
+}
+/* header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: white;
+  padding: 0 30px;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+}
+
+.page-title {
+  font-size: 24px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  padding: 8px 12px 8px 35px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 180px;
+}
+
+.search-box i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.signin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.signin .material-symbols-rounded {
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  margin-top: auto;
+}
+
+.settings-btn:hover {
+  color: #66affc;
+}

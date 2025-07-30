@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Analyse des indicateurs</title>
+  <link rel="stylesheet" href="Analytics.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- <h2>Analyse des indicateurs</h2> -->
+  
+  <!-- Bouton avec flèche pour ouvrir le sous-menu -->
+  <!-- <button class="submenu-toggle" aria-label="Ouvrir sous-menu Contrat Qualité" style="border:none; background:none; cursor:pointer; font-size:18px; margin-left:10px;">
+    <span class="material-symbols-rounded">expand_more</span>
+  </button> -->
+	
+<div class="header">
+  <div class="header-left">
+    <i class="fa fa-home"></i>
+    <span class="breadcrumb">/ Analytics</span>
+    <span class="page-title">RACC</span>
+     <button id="toggle-menu" aria-label="Ouvrir sous-menu Contrat Qualité" style="border:none; background:none; cursor:pointer; font-size:18px; margin-left:10px;">
+      <span class="material-symbols-rounded">expand_more</span>
+    </button>
+  </div>
+
+  <div class="header-right">
+    <div class="search-box">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Type here..." />
+    </div>
+    <div class="signin">
+      <i class="fa fa-user"></i>
+      <span>Sign in</span>
+      <i class="fa fa-cog"></i>
+    </div>
+  </div>
+</div>
+		
+	</section>
+	<!-- CONTENT -->
+	
+  <!-- 🔍 Barre de recherche -->
+<!-- <input type="text" id="searchInput" placeholder="🔍 Rechercher un indicateur..." oninput="filtrerCartes()"> -->
+
+  <!-- 📊 Cartes indicateurs -->
+<!-- 📊 Cartes indicateurs -->
+<div class="indicateur-cards">
+  <div class="card">
+    <div class="card-icon">✔️</div>
+    <div class="card-content">
+      <h3>OK</h3>
+      <p>75%</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-icon">❌</div>
+    <div class="card-content">
+      <h3>NOK</h3>
+      <p>60%</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-icon">⚠️</div>
+    <div class="card-content">
+      <h3>En attente</h3>
+      <p>80%</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-icon">✔️</div>
+    <div class="card-content">
+      <h3>OK</h3>
+      <p>30%</p>
+    </div>
+  </div>
+</div>
+
+  <!-- 🎯 Graphiques -->
+  <div class="charts">
+    <canvas id="barChart"></canvas>
+    <canvas id="pieChart"></canvas>
+  </div>
+
+  <script src="Analytics.js"></script>
+</body>
+</html>
