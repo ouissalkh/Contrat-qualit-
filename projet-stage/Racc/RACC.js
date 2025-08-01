@@ -1,3 +1,4 @@
+// ===== OPTIMISATIONS DE PERFORMANCE =====
 let elementsCache = {};
 let calculTimeout = null;
 
@@ -10,7 +11,7 @@ function initializeCache() {
         bonus: document.querySelectorAll(".Bonus"),
         reparHors: document.querySelectorAll(".repar_hors"),
         maxOKHORSRANG: document.querySelectorAll(".MaxOKHORSRANG"),
-        resultatMax: document.querySelectorAll(".ResulatMax"),
+        resultatMax: document.querySelectorAll(".ResultatMax"),       // corrigé ici
         resultatBonus: document.querySelectorAll(".ResultatBonus"),
         performance: document.querySelectorAll(".performance"),
         
@@ -20,13 +21,13 @@ function initializeCache() {
         totalBonus: document.getElementById("TotalBonus"),
         totalrepHors: document.getElementById("totalrep_hors"),
         totalMaxHORSRANG: document.getElementById("totalMaxHORSRANG"),
-        totalResulatMAX: document.getElementById("TotalResulatMAX"),
+        totalResultatMAX: document.getElementById("TotalResultatMAX"),   // corrigé ici aussi
         totalResultatBonus: document.getElementById("TotalResultatBonus"),
         totalPerformance: document.getElementById("totalPerformance"),
         resultatContratQualite: document.getElementById("resultat_contrat_qualite")
     };
-        
 }
+
 function calculerPointsMaxDynamique() {
     // Totaux fixes par catégorie
     const TOTAUX_FIXES = {
@@ -37,8 +38,8 @@ function calculerPointsMaxDynamique() {
     // Mise à jour des totaux fixes affichés
     const totalPointsMaxElem = document.getElementById("totalPointsMax");
     const totalMaxHORSRANGElem = document.getElementById("totalMaxHORSRANG");
-    if(totalPointsMaxElem) totalPointsMaxElem.textContent = TOTAUX_FIXES["tauxCR"].toFixed(2);
-    if(totalMaxHORSRANGElem) totalMaxHORSRANGElem.textContent = TOTAUX_FIXES["tauxCROKHORS"].toFixed(2);
+    if (totalPointsMaxElem) totalPointsMaxElem.textContent = TOTAUX_FIXES["tauxCR"].toFixed(2);
+    if (totalMaxHORSRANGElem) totalMaxHORSRANGElem.textContent = TOTAUX_FIXES["tauxCROKHORS"].toFixed(2);
 
     // Pour chaque ligne enfant
     document.querySelectorAll("#monTableau tr.child").forEach(row => {
@@ -74,9 +75,6 @@ function calculerPointsMaxDynamique() {
     });
 }
 
-
-
-
 // Chargement des données optimisé
 async function chargerIndicateurs() {
     const mois = document.getElementById("filterMonth").value;
@@ -99,14 +97,36 @@ async function chargerIndicateurs() {
     try {
         // Exécuter les requêtes en parallèle
         const [tauxResponse, repartitionResponse] = await Promise.all([
-            fetch(`taux.php?mois=${mois}&annee=${annee}`),
-            fetch(`repartition.php?mois=${mois}&annee=${annee}`)
+            fetch(`/projet-stage/Racc/taux.php?mois=${mois}&annee=${annee}`),
+            fetch(`/projet-stage/Racc/repartition.php?mois=${mois}&annee=${annee}`)
         ]);
         
-        const [tauxData, repartitionData] = await Promise.all([
-            tauxResponse.json(),
-            repartitionResponse.json()
+        const [tauxText, repartitionText] = await Promise.all([
+            tauxResponse.text(),
+            repartitionResponse.text()
         ]);
+
+        console.log("Taux PHP retourne :", tauxText);
+        console.log("Repartition PHP retourne :", repartitionText);
+
+        let tauxData, repartitionData;
+        try {
+            tauxData = JSON.parse(tauxText);
+        } catch (e) {
+            console.error("Erreur parsing JSON taux.php :", e);
+            console.error("Contenu reçu :", tauxText);
+            afficherErreur();
+            return;
+        }
+        try {
+            repartitionData = JSON.parse(repartitionText);
+        } catch (e) {
+            console.error("Erreur parsing JSON repartition.php :", e);
+            console.error("Contenu reçu :", repartitionText);
+            afficherErreur();
+            return;
+        }
+
         
         // Traitement des données
         if (tauxData.status === "ok") {
@@ -129,20 +149,8 @@ async function chargerIndicateurs() {
         const overlay = document.querySelector('.loading-overlay');
         if (overlay) {
             overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 30);
+            setTimeout(() => overlay.remove(), 300);
         }
-        
-      
-        document.body.insertAdjacentHTML('beforeend', confirmationHTML);
-        
-        // Disparaître après 2 secondes
-        setTimeout(() => {
-            const confirmation = document.querySelector('.loading-overlay');
-            if (confirmation) {
-                confirmation.style.opacity = '0';
-                setTimeout(() => confirmation.remove(), 300);
-            }
-        }, 2000);
     }
 }
 
@@ -245,8 +253,8 @@ function initialiserCalculsOptimise() {
         if (row.querySelector('.repar_hors')) {
             totals.reparHors += parsePercent(row.querySelector('.repar_hors').textContent) || 0;
         }
-        if (row.querySelector('.ResulatMax')) {
-            totals.resultatMax += parseFloat(row.querySelector('.ResulatMax').textContent) || 0;
+        if (row.querySelector('.ResultatMax')) {
+            totals.resultatMax += parseFloat(row.querySelector('.ResultatMax').textContent) || 0;
         }
         if (row.querySelector('.ResultatBonus')) {
             totals.resultatBonus += parseFloat(row.querySelector('.ResultatBonus').textContent) || 0;
@@ -257,10 +265,10 @@ function initialiserCalculsOptimise() {
     });
 
     // Mise à jour des totaux (sauf pointsMax et maxOKHORSRANG déjà à jour)
-    if (elementsCache.totalRepartition) elementsCache.totalRepartition.textContent = totals.repartition.toFixed(2)+'%';
+    if (elementsCache.totalRepartition) elementsCache.totalRepartition.textContent = totals.repartition.toFixed(2) + '%';
     if (elementsCache.totalBonus) elementsCache.totalBonus.textContent = totals.bonus.toFixed(2);
-    if (elementsCache.totalrepHors) elementsCache.totalrepHors.textContent = totals.reparHors.toFixed(2)+"%";
-    if (elementsCache.totalResulatMAX) elementsCache.totalResulatMAX.textContent = totals.resultatMax.toFixed(2);
+    if (elementsCache.totalrepHors) elementsCache.totalrepHors.textContent = totals.reparHors.toFixed(2) + "%";
+    if (elementsCache.totalResultatMAX) elementsCache.totalResultatMAX.textContent = totals.resultatMax.toFixed(2);
     if (elementsCache.totalResultatBonus) elementsCache.totalResultatBonus.textContent = totals.resultatBonus.toFixed(2);
     if (elementsCache.totalPerformance) elementsCache.totalPerformance.textContent = totals.performance.toFixed(2);
     
@@ -270,6 +278,7 @@ function initialiserCalculsOptimise() {
         elementsCache.resultatContratQualite.textContent = totals.contratQualite.toFixed(2);
     }
 }
+
 function calculerBonusLigne(row) {
     const cells = row.cells;
     if (cells.length < 8) return;
@@ -307,17 +316,31 @@ function parsePercent(text) {
     return parseFloat(text.replace('%', '').trim());
 }
 
-// ===== FONCTIONS EXPORT =====
 function exportExcel() {
-    var wb = XLSX.utils.table_to_book(document.getElementById('monTableau'), {sheet:"Feuille1"});
+  console.log("exportExcel appelée");
+  try {
+    const table = document.getElementById('monTableau');
+    if (!table) throw new Error("Tableau non trouvé");
+    var wb = XLSX.utils.table_to_book(table, {sheet:"Feuille1"});
     XLSX.writeFile(wb, 'tableau.xlsx');
+  } catch (error) {
+    alert("Erreur export Excel : " + error.message);
+    console.error(error);
+  }
 }
 
+
+
 function exportPDF() {
+  try {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.autoTable({ html: '#monTableau' });
     doc.save('tableau.pdf');
+  } catch (error) {
+    alert("Erreur export PDF : " + error.message);
+    console.error(error);
+  }
 }
 
 // ===== TOGGLE BUTTONS =====
@@ -346,9 +369,7 @@ function initialiserToggleButtons() {
 document.getElementById('exportBtn').addEventListener('click', function() {
     document.getElementById('exportMenu').classList.toggle('show');
 });
-window.addEventListener('load', () => {
-    calculerPointsMaxDynamique();
-});
+
 // Fermer le dropdown si on clique ailleurs
 window.addEventListener('click', function(e) {
     if (!e.target.matches('.export-btn')) {
@@ -363,15 +384,24 @@ window.addEventListener('click', function(e) {
 window.addEventListener('load', () => {
     initializeCache();
     initialiserToggleButtons();
-    
-    // Gestion du filtre
+    initialiserEcouteursModification();
     document.querySelector('.filter-container button').addEventListener('click', chargerIndicateurs);
+    // Attacher le gestionnaire pour export Excel ici
+    document.getElementById('btnExportExcel').addEventListener('click', exportExcel);
+    document.getElementById('btnExportPDF').addEventListener('click', exportPDF);
+    console.log('typeof XLSX =', typeof XLSX);
+    console.log('btnExportExcel existe ?', !!document.getElementById('btnExportExcel'));
+    document.getElementById('btnExportExcel').addEventListener('click', () => {
+    console.log('Clic sur Export Excel détecté');
+    exportExcel();
 });
-// Ajoutez cette fonction d'initialisation
+
+});
+
+// Ajoutez cette fonction d'initialisation pour l'édition des cellules
 function initialiserEcouteursModification() {
     // On écoute les colonnes 3, 5, 6, 7 dans chaque ligne
     document.querySelectorAll("#monTableau tr").forEach(row => {
-        // On prend les cellules de la ligne
         const cells = row.cells;
         if (!cells) return;
 
@@ -387,14 +417,6 @@ function initialiserEcouteursModification() {
         });
     });
 }
-
-
-
-// Appelez cette fonction dans votre initialisation
 window.addEventListener('load', () => {
-    initializeCache();
-    initialiserToggleButtons();
-    initialiserEcouteursModification(); // <-- Ajoutez cette ligne
-    document.querySelector('.filter-container button').addEventListener('click', chargerIndicateurs);
+  console.log('typeof XLSX =', typeof XLSX);
 });
-   

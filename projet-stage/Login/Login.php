@@ -1,4 +1,3 @@
-<!-- index.php -->
 <?php
 session_start();
 include("php/config.php");
@@ -15,6 +14,7 @@ if (isset($_POST['submit'])) {
         $_SESSION['username'] = $row['username'];
         $_SESSION['age'] = $row['age'] ?? '';
         $_SESSION['id'] = $row['id'];
+        $_SESSION['role'] = $row['role'];
         header("Location: ../index.php");
         exit();
     } else {
@@ -29,7 +29,7 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <title>Connexion</title>
     <link rel="icon" type="image/png" href="image/logo.png">
-    <link rel="stylesheet" href="Login.css">
+    <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
     <div class="container">

@@ -1,85 +1,123 @@
-// variable labels pour les etiquetes des graphes
-const labels = ['OK', 'NOK', 'OK', 'OK'];
-// les valeurs des etiquètes
-const dataValues = [75, 60, 80, 30];
-const colors = dataValues.map(val => {
-  if (val >= 85) return '#229351ff';
-  if (val >= 40) return '#229351ff';
-  return '#e74c3c';
+
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetchDataAndRenderCharts();
 });
 
-// creation des graphes
+function fetchDataAndRenderCharts() {
+  fetch("/projet-stage/Analytics/getAnalyticsData.php")
 
-// Bar Chart
-const barCtx = document.getElementById('barChart').getContext('2d');
-new Chart(barCtx, {
-  type: 'bar',
-  data: {
-    labels: labels,
-    // les donnnes du tableau sont stocker dans datasets
-    datasets: [{
-      label: 'Valeur (%)', // le titre afficher dans la legende
-      data: dataValues, //les valeurs a afficher 
-      backgroundColor: colors // la couleur de chaque valeur
-    }]
-  },
-  options: {
-    // les plugens : title ,legend, tooltip
-    plugins: {
-      title: {
-        display: true,
-        text: 'Graphique en Barres'
-      }
-    }
-  }
-});
-
-// Pie Chart
-const pieCtx = document.getElementById('pieChart').getContext('2d');
-new Chart(pieCtx, {
-  type: 'pie',
-  data: {
-    labels: labels,
-    datasets: [{
-      data: dataValues,
-      backgroundColor: colors
-    }]
-  },
-  options: {
-    plugins: {
-      title: { 
-        display: true, //le titre sera afficher
-        text: 'Graphique en Camembert'
-      }
-    }
-  }
-});
-
-// Recherche / filtre des cartes
-function filtrerCartes() {
-  const filtre = document.getElementById('searchInput').value.toLowerCase();
-  const cartes = document.querySelectorAll('.indicateur-cards .card');
-
-  cartes.forEach(carte => {
-    const titre = carte.querySelector('h3').textContent.toLowerCase();
-    carte.style.display = titre.includes(filtre) ? 'block' : 'none';
-  });
+    .then(response => response.json())
+    .then(data => {
+      console.log("Données reçues :", data);
+      afficherIndicateurs(data);
+      genererGraphiques(data);
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération des données :", error);
+    });
 }
-// pour le boutton sav racc
-  // Gestion du bouton pour afficher/masquer le menu déroulant
-  const toggleBtn = document.getElementById('toggle-menu');
-  const dropdown = document.getElementById('dropdown-menu');
 
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // pour ne pas déclencher le clic sur document
-    if (dropdown.style.display === 'block') {
-      dropdown.style.display = 'none';
-    } else {
-      dropdown.style.display = 'block';
+function afficherIndicateurs(data) {
+  const idMapping = {
+    tauxCR_OK: "tauxCR_OK",
+    securisationRDV: "securisationRDV",
+    delaiPriseRDV: "delaiPriseRDV",
+    clientsTresInsatisfaits: "clientsTresInsatisfaits"
+  };
+
+  for (const key in idMapping) {
+    const element = document.getElementById(idMapping[key]);
+    if (element && data[key] !== undefined) {
+      const value = key === "delaiPriseRDV" ? `${data[key].toFixed(2)} jours` : `${data[key].toFixed(2)}%`;
+      element.textContent = value;
+    }
+  }
+}
+
+function genererGraphiques(data) {
+  const labels = ["Taux CR OK", "Sécurisation RDV", "Délai Prise RDV", "Insatisfaction"];
+  const valeurs = [
+    data.tauxCR_OK,
+    data.securisationRDV,
+    data.delaiPriseRDV,
+    data.clientsTresInsatisfaits
+  ];
+
+  // Création du lineChart
+  const lineCtx = document.getElementById("lineChart")?.getContext("2d");
+  if (lineCtx) {
+    // (Ici gestion de destruction du chart si besoin)
+    new Chart(lineCtx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Indicateurs du mois courant",
+          data: valeurs,
+          borderColor: "#3e95cd",
+          fill: false,
+          tension: 0.2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Évolution des indicateurs - Mois courant' }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  // Création du pieChart
+  const pieCtx = document.getElementById("pieChart")?.getContext("2d");
+  if (pieCtx) {
+    new Chart(pieCtx, {
+      type: "pie",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: valeurs,
+          backgroundColor: ["#4CAF50", "#2196F3", "#FFC107", "#F44336"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Répartition des indicateurs' }
+        }
+      }
+    });
+  }
+}
+document.querySelectorAll('.submenu-link').forEach(link => {
+  link.addEventListener('click', e => {
+    const page = e.target.dataset.page;
+    let url = '';
+
+    if (page === 'Analytics-Racc') {
+      url = 'Analytics-Racc.php';
+    } else if (page === 'SAV') {
+      url = 'SAV.php';
+    }
+
+    if (url) {
+      fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const mainContent = document.getElementById('mainContent');
+          if (mainContent) {
+            mainContent.innerHTML = html;  // Remplace le contenu affiché
+          }
+        })
+        .catch(err => console.error('Erreur chargement page:', err));
     }
   });
-
-  // Fermer le menu si clic en dehors
-  document.addEventListener('click', () => {
-    dropdown.style.display = 'none';
-  });
+});

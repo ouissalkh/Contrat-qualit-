@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include("php/config.php");
@@ -16,7 +15,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_self') {
     session_destroy();
     $message = "Votre compte a été supprimé avec succès.";
 }
-
 if (isset($_GET['msg'])) {
     $message = $_GET['msg'];
 }
@@ -151,8 +149,9 @@ if ($message !== "Votre compte a été supprimé avec succès.") {
 <?php else: ?>
 
 <div class="nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-    <div class="logo">
+    <div class="logo"><a href="../index.php">
         <img src="image/logo.png" alt="Logo" style="max-height: 60px;">
+        </a>
     </div>
     <div class="right-links" style="display: flex; gap: 10px;">
         <a href="edit.php?Id=<?php echo $res_id; ?>">Changer profil</a>
@@ -189,12 +188,12 @@ if ($message !== "Votre compte a été supprimé avec succès.") {
     </div>
 
     <div style="margin-top: 20px; text-align: center;">
-        <?php if ($res_role === 'admin' || $res_role === 'semi-admin') : ?>
+        <?php if ($res_role === 'admin' ) : ?>
             <form action="delete.php" method="get" style="display:inline;">
                 <button type="submit" class="btn btn-success">Gérer les utilisateurs</button>
             </form>
-            <form action="technician.php" method="get" style="display:inline;">
-                <button type="submit" class="btn btn-success">Chercher les techniciens</button>
+            <form action="cards.php" method="get" style="display:inline;">
+                <button type="submit" class="btn btn-success">Cardes</button>
             </form>
         <?php else: ?>
             <form action="home.php" method="get" style="display:inline;">

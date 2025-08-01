@@ -21,9 +21,11 @@ if (!isset($_SESSION['username'])) {
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <!-- Analytics.html -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ 
   <!-- <script src="SAV/SAV.js"></script> -->
-  <script src="Racc/RACC.js"></script>
+  <!-- <script src="Racc/RACC.js"></script> -->
+   
+
 
   
   <!-- <link rel="stylesheet" href="Users/technicien.css"> -->
@@ -81,13 +83,13 @@ if (!isset($_SESSION['username'])) {
             </a>
           </li>
 
-          <!-- Dashboard -->
+          <!-- Dashboard
           <li class="menu-item">
             <a href="javascript:void(0)" class="menu-link" data-page="dash">
               <span class="material-symbols-rounded">space_dashboard</span>
               <span class="menu-label">Dashboard</span>
             </a>
-          </li>
+          </li> -->
 
           <!-- Saisie Mesure
           <li class="menu-item">
@@ -99,7 +101,7 @@ if (!isset($_SESSION['username'])) {
 
           <!-- Utilisateurs -->
           <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link" id="load-utilisateurs">
+            <a href="Login/home.php" class="menu-link" >
               <span class="material-symbols-rounded">group</span>
               <span class="menu-label">Utilisateurs</span>
             </a>
@@ -146,7 +148,7 @@ if (!isset($_SESSION['username'])) {
           console.log("Click sur Utilisateurs détecté");
           setActiveMenu(utilisateursLink);
 
-          fetch("Users/technicien.php", {
+          fetch("Login/home.php", {
             headers: {
               "X-Requested-With": "XMLHttpRequest"
             }
@@ -245,6 +247,47 @@ if (!isset($_SESSION['username'])) {
           script.onload = () => {
             if (page === "SAV" && typeof mettreAJourTotaux === "function") {
               mettreAJourTotaux();
+            }
+            //+++
+            if (page === "Analytics") {
+              fetchDataAndRenderCharts();
+
+              // Attacher listener sur btnRacc maintenant que le contenu est injecté
+              const raccBtn = document.getElementById("btnRacc");
+              if (raccBtn) {
+                raccBtn.addEventListener("click", () => {
+                  fetch("Analytics/Analytics-Racc.php")
+                    .then(res => {
+                      if (!res.ok) throw new Error("Erreur chargement Analytics-Racc.php");
+                      return res.text();
+                    })
+                    .then(html => {
+                      document.getElementById("contenuRACC").innerHTML = html;
+
+                      if (!document.querySelector('link[href="Analytics/Analytics-Racc.css"]')) {
+                        const link = document.createElement("link");
+                        link.rel = "stylesheet";
+                        link.href = "Analytics/Analytics-Racc.css";
+                        document.head.appendChild(link);
+                      }
+
+                      // Charger Analytics-Racc.js (supprimer l'ancien si besoin)
+                      const oldScript = document.getElementById("script-Analytics-Racc");
+                      if (oldScript) oldScript.remove();
+
+                      const script = document.createElement("script");
+                      script.id = "script-Analytics-Racc";
+                      script.src = "Analytics/Analytics-Racc.js";
+                      document.body.appendChild(script);
+                    })
+                    .catch(console.error);
+                });
+              }
+            }
+
+            // +++++//
+            if (page === "Analytics" && typeof fetchDataAndRenderCharts === "function") {
+              fetchDataAndRenderCharts();
             }
             if (typeof createCharts === "function") {
               createCharts();
@@ -415,6 +458,15 @@ if (!isset($_SESSION['username'])) {
         console.log("Police Material Symbols rechargée dynamiquement.");
       }
     });
+
+
+
+
+    
+
+
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="Analytics/Analytics.js"></script>
 </body>
 </html>

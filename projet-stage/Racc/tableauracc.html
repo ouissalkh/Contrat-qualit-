@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+    
 <style>
 * {
     margin: 0;
@@ -584,6 +584,42 @@ tr.child.hidden {
     color: #333;
     font-weight: 600;
 }
+/* Menu export caché par défaut */
+.export-menu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 45px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+
+/* Affiché si la classe 'show' est ajoutée dynamiquement */
+.export-menu.show {
+  display: block;
+}
+
+.export-menu button {
+  display: block;
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.export-menu button:hover {
+  background-color: #e2e2e2;
+}
+
 </style>
 </head>
 
@@ -885,16 +921,28 @@ tr.child.hidden {
             </table>
         </div>
 
-        <div class="export-btn-container">
-            <button class="export-btn" id="exportBtn">Exporter ▼</button>
-            <div class="dropdown-menu" id="exportMenu">
-                <button onclick="exportPDF()">Exporter en PDF</button>
-                <button onclick="exportExcel()">Exporter en Excel</button>
-            </div>
+        <button id="exportBtn" class="export-btn">Exporter</button>
+        <div id="exportMenu" class="export-menu">
+            <button id="btnExportExcel">Exporter en Excel</button>
+            <button id="btnExportPDF">Exporter en PDF</button>
         </div>
-     </div>
-    <script src="RACC.js">
 
-    </script>
+
+
+
+
+<!-- Librairies externes
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Ton script qui utilise ces librairies 
+<script defer src="RACC.js"></script> -->
+
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script defer src="RACC.js"></script>
+
+
 </body>
 </html>

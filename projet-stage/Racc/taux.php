@@ -30,11 +30,10 @@ $zones = [
     ["zone" => "ZONE C", "type" => "Construction", "id" => "taux_zone_c_construction", "filtre_prise" => ["Prise non-existante", "Prise non-existante (HOTLINE)"]]
 ];
 
-
 $tauxResultats = [];
 
 foreach ($zones as $z) {
-    $where = " `Zone contrat 2023` = ? AND MONTH(`Date Rdv Racc`) = ? AND YEAR(`Date Rdv Racc`) = ? AND `RANG_RDV (copie)` = 1  AND `TYPE_PRESTATION` != 'PLP_BRASSAGE'";
+    $where = "`Zone contrat 2023` = ? AND MONTH(`Date Rdv Racc`) = ? AND YEAR(`Date Rdv Racc`) = ? AND `RANG_RDV (copie)` = 1 AND `TYPE_PRESTATION` != 'PLP_BRASSAGE'";
     $params = [$z['zone'], $mois, $annee];
     $types = "sii";
 
@@ -49,8 +48,7 @@ foreach ($zones as $z) {
         $types .= str_repeat("s", count($z['filtre_prise']));
     }
 
-
-    // Total RDV avec filtre GRP_STATUT_CRINSTALL_MNT IN (...)
+    // Total RDV
     $sql_total = "SELECT COUNT(*) as total FROM `racc - taux de cr ok - 1er rdv` WHERE $where AND `GRP_STATUT_CRINSTALL_MNT` IN ('CR_MNT_DELAI','CR_MNT_NOK','CR_MNT_NOK - MAUVAIS CODE','CR_MNT_OK')";
     $stmt_total = $conn->prepare($sql_total);
     $stmt_total->bind_param($types, ...$params);
@@ -59,7 +57,7 @@ foreach ($zones as $z) {
     $total = $res_total['total'] ?? 0;
     $stmt_total->close();
 
-    // RDV OK (statut CR_MNT_OK)
+    // RDV OK
     $sql_ok = "SELECT COUNT(*) as ok FROM `racc - taux de cr ok - 1er rdv` WHERE $where AND `GRP_STATUT_CRINSTALL_MNT` = 'CR_MNT_OK'";
     $stmt_ok = $conn->prepare($sql_ok);
     $stmt_ok->bind_param($types, ...$params);
@@ -69,14 +67,10 @@ foreach ($zones as $z) {
     $stmt_ok->close();
 
     $taux = ($total > 0) ? round(($ok / $total) * 100, 2) : 0;
-
     $tauxResultats[$z['id']] = $taux;
 }
 
-
-// ...calculs des taux 1er RDV...
-
-// Calcul des taux CR OK-HORS RANG 1 par zone
+// Hors rang
 $zonesHorsRang = [
     ["zone" => "ZONE A", "id" => "taux_hors_rang_a"],
     ["zone" => "ZONE B", "id" => "taux_hors_rang_b"],
@@ -84,7 +78,7 @@ $zonesHorsRang = [
 ];
 
 foreach ($zonesHorsRang as $z) {
-    $where = " `Zone contrat 2023` = ? AND MONTH(`Date Rdv Racc`) = ? AND YEAR(`Date Rdv Racc`) = ? AND `RANG_RDV (copie)` >= 2";
+    $where = "`Zone contrat 2023` = ? AND MONTH(`Date Rdv Racc`) = ? AND YEAR(`Date Rdv Racc`) = ? AND `RANG_RDV (copie)` >= 2";
     $params = [$z['zone'], $mois, $annee];
     $types = "sii";
 
@@ -105,10 +99,10 @@ foreach ($zonesHorsRang as $z) {
     $stmt_ok->close();
 
     $taux = ($total > 0) ? round(($ok / $total) * 100, 2) : 0;
-
     $tauxResultats[$z['id']] = $taux;
 }
-// --------------------- CALCUL TAUX DE CR OK GLOBAL ---------------------
+
+// Global CR OK
 $sql_cr_global_total = "SELECT COUNT(*) as total FROM `racc - taux de cr ok - 1er rdv`
 WHERE MONTH(`Date Rdv Racc`) = ? 
 AND YEAR(`Date Rdv Racc`) = ? 
@@ -133,10 +127,9 @@ $res_cr_ok = $stmt_cr_ok->get_result()->fetch_assoc();
 $stmt_cr_ok->close();
 $ok_cr_global = $res_cr_ok['ok'] ?? 0;
 
-$taux_cr_ok_global = ($total_cr_global > 0) ? round(($ok_cr_global / $total_cr_global) * 100, 2) : 0;
-$tauxResultats['taux_cr_ok_global'] = $taux_cr_ok_global;
+$tauxResultats['taux_cr_ok_global'] = ($total_cr_global > 0) ? round(($ok_cr_global / $total_cr_global) * 100, 2) : 0;
 
-// Calcul du délai de prise du 1er RDV
+// Délai 1er RDV
 $sql_delai = "SELECT 
     COUNT(*) as total,
     SUM(`Delais 1er rdv inf 20j`) as dans_delai
@@ -145,16 +138,15 @@ WHERE MONTH(`Date Ss`) = ?
 AND YEAR(`Date Ss`) = ? 
 AND `Flag précommande` != 'PRECOMMANDE'";
 
-
 $stmt_delai = $conn->prepare($sql_delai);
 $stmt_delai->bind_param("ii", $mois, $annee);
 $stmt_delai->execute();
 $res_delai = $stmt_delai->get_result()->fetch_assoc();
 $stmt_delai->close();
 
-$taux_delai = ($res_delai['total'] > 0) ? round(($res_delai['dans_delai'] / $res_delai['total']) * 100, 2) : 0;
-$tauxResultats['delai_prise_1er_rdv'] = $taux_delai;
-// Calcul du taux de report
+$tauxResultats['delai_prise_1er_rdv'] = ($res_delai['total'] > 0) ? round(($res_delai['dans_delai'] / $res_delai['total']) * 100, 2) : 0;
+
+// Report
 $sql_report = "SELECT 
     COUNT(*) as total_rdv,
     SUM(CASE WHEN `Taux de RDV planifiés N'AYANT PAS eu lieu à la date de planif` = 1 THEN 1 ELSE 0 END) as rdv_reports
@@ -168,44 +160,52 @@ $stmt_report->execute();
 $res_report = $stmt_report->get_result()->fetch_assoc();
 $stmt_report->close();
 
-$taux_report = ($res_report['total_rdv'] > 0) ? round(($res_report['rdv_reports'] / $res_report['total_rdv']) * 100, 2) : 0;
-$tauxResultats['taux_report'] = $taux_report;
+$tauxResultats['taux_report'] = ($res_report['total_rdv'] > 0) ? round(($res_report['rdv_reports'] / $res_report['total_rdv']) * 100, 2) : 0;
 
-
-// --------------------- CALCUL SATCLI SUR RDV OK ---------------------
-$sql_satcli_ok = "SELECT 
-    COUNT(*) as total,
-    SUM(CASE WHEN `Valr Not Glbl` >= 4 THEN 1 ELSE 0 END) as satisfaits
-FROM `SATCLI_SEM_RACC`
-WHERE MONTH(`Date Inter`) = ? 
-AND YEAR(`Date Inter`) = ?";
-
+// SATCLI
+$sql_satcli_ok = "
+SELECT COUNT(*) AS total_ok
+FROM `SATCLI_SEM_RACC` s
+JOIN `racc - taux de cr ok - 1er rdv` r ON s.`Idnt Ext Interv` = r.`Lib Ref Erdv`
+WHERE r.`GRP_STATUT_CRINSTALL_MNT` = 'CR_MNT_OK'
+  AND MONTH(s.`Date Inter`) = ?
+  AND YEAR(s.`Date Inter`) = ?";
 $stmt_satcli_ok = $conn->prepare($sql_satcli_ok);
 $stmt_satcli_ok->bind_param("ii", $mois, $annee);
 $stmt_satcli_ok->execute();
 $res_satcli_ok = $stmt_satcli_ok->get_result()->fetch_assoc();
 $stmt_satcli_ok->close();
+$satcli_ok = $res_satcli_ok['total_ok'] ?? 0;
 
-$taux_satcli_ok = ($res_satcli_ok['total'] > 0) ? round(($res_satcli_ok['satisfaits'] / $res_satcli_ok['total']) * 100, 2) : 0;
-$tauxResultats['satcli_rdv_ok'] = $taux_satcli_ok;
-
-// --------------------- CALCUL SATCLI SUR RDV NOK ---------------------
-$sql_satcli_nok = "SELECT 
-    COUNT(*) as total,
-    SUM(CASE WHEN `Valr Not Glbl` < 4 THEN 1 ELSE 0 END) as non_satisfaits
-FROM `SATCLI_SEM_RACC`
-WHERE MONTH(`Date Inter`) = ? 
-AND YEAR(`Date Inter`) = ?";
-
+$sql_satcli_nok = "
+SELECT COUNT(*) AS total_nok
+FROM `SATCLI_SEM_RACC` s
+JOIN `racc - taux de cr ok - 1er rdv` r ON s.`Idnt Ext Interv` = r.`Lib Ref Erdv`
+WHERE r.`GRP_STATUT_CRINSTALL_MNT` != 'CR_MNT_OK'
+  AND MONTH(s.`Date Inter`) = ?
+  AND YEAR(s.`Date Inter`) = ?";
 $stmt_satcli_nok = $conn->prepare($sql_satcli_nok);
 $stmt_satcli_nok->bind_param("ii", $mois, $annee);
 $stmt_satcli_nok->execute();
 $res_satcli_nok = $stmt_satcli_nok->get_result()->fetch_assoc();
 $stmt_satcli_nok->close();
+$satcli_nok = $res_satcli_nok['total_nok'] ?? 0;
 
-$taux_satcli_nok = ($res_satcli_nok['total'] > 0) ? round(($res_satcli_nok['non_satisfaits'] / $res_satcli_nok['total']) * 100, 2) : 0;
-$tauxResultats['satcli_rdv_nok'] = $taux_satcli_nok;
+$sql_satcli_total = "
+SELECT COUNT(*) AS total
+FROM `SATCLI_SEM_RACC` s
+JOIN `racc - taux de cr ok - 1er rdv` r ON s.`Idnt Ext Interv` = r.`Lib Ref Erdv`
+WHERE MONTH(s.`Date Inter`) = ?
+  AND YEAR(s.`Date Inter`) = ?";
+$stmt_satcli_total = $conn->prepare($sql_satcli_total);
+$stmt_satcli_total->bind_param("ii", $mois, $annee);
+$stmt_satcli_total->execute();
+$res_satcli_total = $stmt_satcli_total->get_result()->fetch_assoc();
+$stmt_satcli_total->close();
+$total_satcli = $res_satcli_total['total'] ?? 0;
 
+$tauxResultats['satcli_rdv_ok'] = ($total_satcli > 0) ? round(($satcli_ok / $total_satcli) * 100, 2) : 0;
+$tauxResultats['satcli_rdv_nok'] = ($total_satcli > 0) ? round(($satcli_nok / $total_satcli) * 100, 2) : 0;
 
 $conn->close();
 
@@ -213,6 +213,3 @@ echo json_encode([
     "status" => "ok",
     "taux" => $tauxResultats
 ]);
-
-
-?>
