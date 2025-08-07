@@ -1,41 +1,30 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: login/login.php");
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kyntus Maroc</title>
-  <link rel="stylesheet" href="libs/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/fontawesome.min.css">
-  <link rel="stylesheet" href="style.css">
-  <!-- Ajoute ceci au tout début du <head> -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="libs/bootstrap.min.css" />
+  <link rel="stylesheet" href="libs/fontawesome.min.css" />
+  <link rel="stylesheet" href="style.css" />
 
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <!-- Analytics.html -->
- 
-  <!-- <script src="SAV/SAV.js"></script> -->
-  <!-- <script src="Racc/RACC.js"></script> -->
-   
-
-
-  
-  <!-- <link rel="stylesheet" href="Users/technicien.css"> -->
-
-  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+  />
 </head>
 <body>
   <!-- Navbar -->
   <nav class="site-nav">
-    <button class="sidebar-toggle">
+    <button class="sidebar-toggle" aria-label="Toggle sidebar">
       <span class="material-symbols-rounded">menu</span>
     </button>
   </nav>
@@ -43,65 +32,46 @@ if (!isset($_SESSION['username'])) {
   <!-- Conteneur principal -->
   <div class="container collapsed">
     <!-- Sidebar -->
-    <aside class="sidebar collapsed">
-      <!-- Header -->
+    <aside class="sidebar collapsed" role="navigation" aria-label="Sidebar menu">
       <header class="sidebar-header">
-        <img src="log.png" alt="Logo" class="header-logo">
-        <button class="sidebar-toggle">
+        <img src="logo.png" alt="Logo" class="header-logo" />
+        <button class="sidebar-toggle" aria-label="Toggle sidebar">
           <span class="material-symbols-rounded">chevron_left</span>
         </button>
       </header>
 
-      <!-- Contenu Sidebar -->
       <div class="sidebar-content">
-        <!-- Formulaire de recherche -->
-        <form action="#" class="search-form">
+        <form action="#" class="search-form" role="search">
           <span class="material-symbols-rounded">search</span>
-          <input type="search" placeholder="Search" required>
+          <input type="search" placeholder="Search" aria-label="Search" required />
         </form>
 
-        <!-- Menu -->
         <ul class="menu-list">
-          <!-- Contrat Qualité -->
           <li class="menu-item dropdown">
-            <a href="#" id="link-espace" class="menu-link active">
+            <a href="#" id="link-espace" class="menu-link active" aria-haspopup="true" aria-expanded="false">
               <span class="material-symbols-rounded">apps</span>
               <span class="menu-label">Contrat Qualité</span>
             </a>
-            <div class="submenu">
+            <div class="submenu" aria-label="Sous-menu Contrat Qualité">
               <a href="javascript:void(0)" class="submenu-link" data-page="SAV">SAV</a>
-              <a href="javascript:void(0)" class="submenu-link" data-page="RAC">RAC</a>
-              <a href="javascript:void(0)" class="submenu-link" data-page="TOUS">TOUS</a>
+              <a href="javascript:void(0)" class="submenu-link" data-page="RACC">RACC</a>
             </div>
           </li>
 
-          <!-- Analytics -->
-          <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link" data-page="Analytics">
+          <li class="menu-item dropdown">
+            <a href="javascript:void(0)" class="menu-link">
               <span class="material-symbols-rounded">analytics</span>
               <span class="menu-label">Analytics</span>
             </a>
+            <div class="submenu" aria-label="Sous-menu Analytics">
+              <a href="javascript:void(0)" class="submenu-link" data-page="Analytics/Analytics">SAV</a>
+              <a href="javascript:void(0)" class="submenu-link" data-page="Analytics/Analytics-Racc">RACC</a>         
+            </div>
           </li>
 
-          <!-- Dashboard
-          <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link" data-page="dash">
-              <span class="material-symbols-rounded">space_dashboard</span>
-              <span class="menu-label">Dashboard</span>
-            </a>
-          </li> -->
 
-          <!-- Saisie Mesure
           <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
-              <span class="material-symbols-rounded">edit_square</span>
-              <span class="menu-label">Saisie Mesure</span>
-            </a>
-          </li> -->
-
-          <!-- Utilisateurs -->
-          <li class="menu-item">
-            <a href="Login/home.php" class="menu-link" >
+            <a href="Login/home.php" class="menu-link">
               <span class="material-symbols-rounded">group</span>
               <span class="menu-label">Utilisateurs</span>
             </a>
@@ -109,9 +79,8 @@ if (!isset($_SESSION['username'])) {
         </ul>
       </div>
 
-      <!-- Footer -->
       <div class="sidebar-footer">
-        <button class="theme-toggle">
+        <button class="theme-toggle" aria-label="Toggle dark mode">
           <div class="theme-label">
             <span class="theme-icon material-symbols-rounded">dark_mode</span>
             <span class="theme-text">Dark Mode</span>
@@ -123,77 +92,42 @@ if (!isset($_SESSION['username'])) {
       </div>
     </aside>
 
-    <!-- Contenu principal -->
-    <div class="main-content" id="contenu">
-      <!-- Le contenu dynamique sera injecté ici -->
-    </div>
+    <main class="main-content" id="contenu" tabindex="-1" role="main">
+      <!-- Contenu dynamique chargé ici -->
+    </main>
   </div>
 
-  <!-- Script principal -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("DOM chargé");
-
       const sidebar = document.querySelector(".sidebar");
       const sidebarToggleBtn = document.querySelectorAll(".sidebar-toggle");
       const themeToggleBtn = document.querySelector(".theme-toggle");
       const themeIcon = themeToggleBtn.querySelector(".theme-icon");
       const searchForm = document.querySelector(".search-form");
       const contenu = document.getElementById("contenu");
-      const utilisateursLink = document.getElementById("load-utilisateurs");
 
-      if (utilisateursLink) {
-        utilisateursLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          console.log("Click sur Utilisateurs détecté");
-          setActiveMenu(utilisateursLink);
-
-          fetch("Login/home.php", {
-            headers: {
-              "X-Requested-With": "XMLHttpRequest"
-            }
-          })
-            .then(response => {
-              console.log("Réponse HTTP :", response.status);
-              if (!response.ok) throw new Error("Erreur HTTP " + response.status);
-              return response.text();
-            })
-            .then(data => {
-              console.log("Contenu reçu :", data);
-              contenu.innerHTML = data;
-            })
-            .catch(error => {
-              console.error("Erreur lors du fetch:", error);
-              contenu.innerHTML = `<p style="color:red;">Erreur de chargement : ${error.message}</p>`;
-            });
-        });
-      } else {
-        console.warn("Élément #load-utilisateurs introuvable");
-      }
-
-      // const utilisateursLink = document.getElementById("load-utilisateurs");
-
-      // === Gestion du thème ===
-      const updateThemeIcon = () => {
+      // Gestion thème
+      function updateThemeIcon() {
         const isDark = document.body.classList.contains("dark-theme");
         themeIcon.textContent = sidebar.classList.contains("collapsed")
           ? (isDark ? "light_mode" : "dark_mode")
           : "dark_mode";
-      };
-
+      }
       const savedTheme = localStorage.getItem("theme");
       const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const shouldUseDark = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
       document.body.classList.toggle("dark-theme", shouldUseDark);
       updateThemeIcon();
 
-      sidebarToggleBtn.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          sidebar.classList.toggle("collapsed");
-          updateThemeIcon();
-        });
-      });
+      // Toggle sidebar
+      sidebarToggleBtn.forEach(btn => btn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+        updateThemeIcon();
+      }));
 
+      // Focus champ recherche si sidebar repliée
       searchForm.addEventListener("click", () => {
         if (sidebar.classList.contains("collapsed")) {
           sidebar.classList.remove("collapsed");
@@ -201,272 +135,351 @@ if (!isset($_SESSION['username'])) {
         }
       });
 
+      // Toggle thème dark/light
       themeToggleBtn.addEventListener("click", () => {
         const isDark = document.body.classList.toggle("dark-theme");
         localStorage.setItem("theme", isDark ? "dark" : "light");
         updateThemeIcon();
       });
 
-      // === Charger page dynamiquement ===
-      async function loadPage(page) {
-        const folder = page;
-        const htmlPath = `${folder}/${folder}.php`;
-        // const htmlPath = folder === 'Analytics' ? `${folder}/${folder}.php` : `${folder}/${folder}.html`;
+      // Chargement dynamique d'une page
+      // async function loadPage(page) {
+      //   let htmlPath, cssPath, jsPath, scriptId;
 
-        const cssPath = `${folder}/${folder}.css`;
-        const jsPath = `${folder}/${folder}.js`;
-        // const phpPath = `${folder}/${folder}.php`;
-        const scriptId = `script-${folder}`;
+      //   if (page.startsWith("Analytics/")) {
+      //     htmlPath = `${page}.php`;
+      //     cssPath = `${page}.css`;
+      //     jsPath = `${page}.js`;
+      //     scriptId = `script-${page.replace("/", "-")}`;
+      //   } else {
+      //     htmlPath = `${page}/${page}.php`;
+      //     cssPath = `${page}/${page}.css`;
+      //     jsPath = `${page}/${page}.js`;
+      //     scriptId = `script-${page}`;
+      //   }
+
+      //   try {
+      //     const response = await fetch(htmlPath);
+      //     if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+      //     const html = await response.text();
+
+      //     contenu.innerHTML = html;
+      //     contenu.scrollTop = 0;
+      //     contenu.focus();
+
+      //     // Charger CSS si absent
+      //     if (!document.querySelector(`link[href="${cssPath}"]`)) {
+      //       const link = document.createElement("link");
+      //       link.rel = "stylesheet";
+      //       link.href = cssPath;
+      //       document.head.appendChild(link);
+      //     }
+
+      //     // Retirer ancien script
+      //     const oldScript = document.getElementById(scriptId);
+      //     if (oldScript) oldScript.remove();
+
+      //     // Charger script JS
+      //     const script = document.createElement("script");
+      //     script.src = jsPath;
+      //     script.id = scriptId;
+      //     script.onload = async () => {
+      //       if (page === "Analytics/Analytics-Racc") {
+      //         const dataResponse = await fetch("Analytics/getAnalyticsDataRacc.php", {
+      //           headers: { "X-Requested-With": "XMLHttpRequest" }
+      //         });
+      //         if (!dataResponse.ok) throw new Error(`Erreur chargement des données RACC (${dataResponse.status})`);
+      //         const data = await dataResponse.json();
+
+      //         if (typeof afficherIndicateurs === "function") {
+      //           afficherIndicateurs(data);
+      //         }
+      //       }
+      //     };
+      //     document.body.appendChild(script);
+
+      //   } catch (err) {
+      //     contenu.innerHTML = `<p style="color:red;">Erreur lors du chargement : ${err.message}</p>`;
+      //     console.error(err);
+      //   }
+      // }
+      async function loadPage(page) {
+        let htmlPath, cssPath, jsPath, scriptId;
+
+        if (page.startsWith("Analytics/")) {
+          htmlPath = `${page}.php`;
+          cssPath = `${page}.css`;
+          jsPath = `${page}.js`;
+          scriptId = `script-${page.replace("/", "-")}`;
+        } else {
+          htmlPath = `${page}/${page}.php`;
+          cssPath = `${page}/${page}.css`;
+          jsPath = `${page}/${page}.js`;
+          scriptId = `script-${page}`;
+        }
 
         try {
           const response = await fetch(htmlPath);
           if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
           const html = await response.text();
 
-          if (!contenu) throw new Error("Élément #contenu introuvable dans le DOM");
           contenu.innerHTML = html;
           contenu.scrollTop = 0;
+          contenu.focus();
 
-          if (!document.querySelector(`link[href="${cssPath}"]`)) {
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = cssPath;
-            document.head.appendChild(link);
-          }
+          // Charger CSS (en supprimant l'ancien)
+          injectCSS(cssPath);
 
-          // Supprimer ancien script si existant
+          // Retirer ancien script
           const oldScript = document.getElementById(scriptId);
           if (oldScript) oldScript.remove();
 
-          // **Déclaration avant utilisation**
-          const script = document.createElement("script");
-          script.src = jsPath;
-          script.id = scriptId;
+          // Charger script JS
+          await injectScript(jsPath, scriptId);
 
-          // Mettre à jour les bonus APRES chargement du script
-          script.onload = () => {
-            if (page === "SAV" && typeof mettreAJourTotaux === "function") {
-              mettreAJourTotaux();
+          // Appeler fonction spécifique selon la page
+          if (page === "Analytics/Analytics-Racc") {
+            if (typeof initAnalytics === "function") {
+              initAnalytics();
             }
-            //+++
-            if (page === "Analytics") {
-              fetchDataAndRenderCharts();
+            const dataResponse = await fetch("Analytics/getAnalyticsDataRacc.php", {
+              headers: { "X-Requested-With": "XMLHttpRequest" }
 
-              // Attacher listener sur btnRacc maintenant que le contenu est injecté
-              const raccBtn = document.getElementById("btnRacc");
-              if (raccBtn) {
-                raccBtn.addEventListener("click", () => {
-                  fetch("Analytics/Analytics-Racc.php")
-                    .then(res => {
-                      if (!res.ok) throw new Error("Erreur chargement Analytics-Racc.php");
-                      return res.text();
-                    })
-                    .then(html => {
-                      document.getElementById("contenuRACC").innerHTML = html;
+            });
+            if (!dataResponse.ok) throw new Error(`Erreur chargement des données RACC (${dataResponse.status})`);
+            const data = await dataResponse.json();
 
-                      if (!document.querySelector('link[href="Analytics/Analytics-Racc.css"]')) {
-                        const link = document.createElement("link");
-                        link.rel = "stylesheet";
-                        link.href = "Analytics/Analytics-Racc.css";
-                        document.head.appendChild(link);
-                      }
-
-                      // Charger Analytics-Racc.js (supprimer l'ancien si besoin)
-                      const oldScript = document.getElementById("script-Analytics-Racc");
-                      if (oldScript) oldScript.remove();
-
-                      const script = document.createElement("script");
-                      script.id = "script-Analytics-Racc";
-                      script.src = "Analytics/Analytics-Racc.js";
-                      document.body.appendChild(script);
-                    })
-                    .catch(console.error);
-                });
-              }
+            if (typeof afficherIndicateurs === "function") {
+              afficherIndicateurs(data);
             }
-
-            // +++++//
-            if (page === "Analytics" && typeof fetchDataAndRenderCharts === "function") {
-              fetchDataAndRenderCharts();
+          } else if (page === "Analytics/Analytics") {
+            if (typeof initAnalytics === "function") {
+              initAnalytics();
             }
-            if (typeof createCharts === "function") {
-              createCharts();
-            }
-          };
-
-          document.body.appendChild(script);
+          }
 
         } catch (err) {
-          if (contenu) {
-            contenu.innerHTML = `<p style="color:red;">Erreur lors du chargement de la page : ${err.message}</p>`;
-          }
+          contenu.innerHTML = `<p style="color:red;">Erreur lors du chargement : ${err.message}</p>`;
           console.error(err);
         }
       }
 
+      // async function loadPage(page) {
+      //   const htmlPath = `${page}/${page}.php`;
+      //   const cssPath = `${page}/${page}.css`;
+      //   const jsPath = `${page}/${page}.js`;
+      //   const scriptId = `script-${page}`;
 
-      // === Active menu ===
+      //   try {
+      //     const response = await fetch(htmlPath);
+      //     if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+      //     const html = await response.text();
+
+      //     contenu.innerHTML = html;
+      //     contenu.scrollTop = 0;
+      //     contenu.focus();
+
+      //     // Charger CSS si absent
+      //     if (!document.querySelector(`link[href="${cssPath}"]`)) {
+      //       const link = document.createElement("link");
+      //       link.rel = "stylesheet";
+      //       link.href = cssPath;
+      //       document.head.appendChild(link);
+      //     }
+
+      //     // Retirer ancien script
+      //     const oldScript = document.getElementById(scriptId);
+      //     if (oldScript) oldScript.remove();
+
+      //     // Charger script JS
+      //     const script = document.createElement("script");
+      //     script.src = jsPath;
+      //     script.id = scriptId;
+      //     script.onload = () => {
+      //       // Initialisation spécifique par page si besoin
+      //       if (page === "Analytics" && typeof initAnalytics === "function") initAnalytics();
+      //       if (page === "SAV" && typeof mettreAJourTotaux === "function") mettreAJourTotaux();
+      //     };
+      //     document.body.appendChild(script);
+
+      //   } catch (err) {
+      //     contenu.innerHTML = `<p style="color:red;">Erreur lors du chargement : ${err.message}</p>`;
+      //     console.error(err);
+      //   }
+      // }
+
+      // Gère activation menu
       function setActiveMenu(link) {
-        document.querySelectorAll(".menu-link").forEach((l) => l.classList.remove("active"));
+        document.querySelectorAll(".menu-link").forEach(l => l.classList.remove("active"));
         link.classList.add("active");
       }
 
-      // === Gestion des clics menu pages statiques ===
-      document.querySelectorAll(".menu-link[data-page]").forEach((link) => {
+      // Clic sur menu pages dynamiques
+      document.querySelectorAll(".menu-link[data-page]").forEach(link => {
         link.addEventListener("click", async (e) => {
           e.preventDefault();
-          const page = link.dataset.page;
           setActiveMenu(link);
-          await loadPage(page);
+          await loadPage(link.dataset.page);
         });
       });
-    //charger Racc
-      document.querySelectorAll(".submenu-link").forEach((link) => {
+
+      // Clic sur sous-menus
+      document.querySelectorAll(".submenu-link").forEach(link => {
         link.addEventListener("click", async (e) => {
           e.preventDefault();
           const page = link.dataset.page;
-
-          if (page === "RAC") {
+          if (page === "RACC") {
             try {
-              // 1. Charger le HTML
-              const responseHTML = await fetch("Racc/tableauracc.html");
-              if (!responseHTML.ok) throw new Error(`Erreur chargement tableauracc.html (${responseHTML.status})`);
-              const htmlContent = await responseHTML.text();
-              contenu.innerHTML = htmlContent;
+              const htmlResponse = await fetch("Racc/tableauracc.html");
+              if (!htmlResponse.ok) throw new Error(`Erreur chargement tableauracc.html (${htmlResponse.status})`);
+              contenu.innerHTML = await htmlResponse.text();
 
-              // 2. Charger les données dynamiques initiales
-              const responseData = await fetch("Racc/taux.php", {
-                headers: { "X-Requested-With": "XMLHttpRequest" }
-              });
-              if (!responseData.ok) throw new Error(`Erreur chargement taux.php (${responseData.status})`);
-              const data = await responseData.json();
+              const dataResponse = await fetch("Racc/taux.php", { headers: { "X-Requested-With": "XMLHttpRequest" } });
+              if (!dataResponse.ok) throw new Error(`Erreur chargement taux.php (${dataResponse.status})`);
+              const data = await dataResponse.json();
 
-              // 3. Charger dynamiquement le script RACC.js (suppression script précédent)
+              const oldScript = document.getElementById("script-RACC");
+              if (oldScript) oldScript.remove();
+
               await new Promise((resolve, reject) => {
-                const ancienScript = document.getElementById("script-RACC");
-                if (ancienScript) ancienScript.remove();
-
                 const script = document.createElement("script");
                 script.src = "Racc/RACC.js";
                 script.id = "script-RACC";
-                script.onload = () => {
-                  console.log("RACC.js chargé avec succès");
-                  resolve();
-                };
-                script.onerror = () => {
-                  console.error("Erreur chargement RACC.js");
-                  reject(new Error("Erreur chargement RACC.js"));
-                };
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error("Erreur chargement RACC.js"));
                 document.body.appendChild(script);
               });
 
-              // 4. Appeler les fonctions d'initialisation après chargement script + HTML
+              // Initialisations RACC
               if (typeof initializeCache === "function") initializeCache();
               if (typeof initialiserCalculs === "function") initialiserCalculs();
               if (typeof attacherEventListeners === "function") attacherEventListeners();
               if (typeof initialiserToggleButtons === "function") initialiserToggleButtons();
-
-              // 5. Mettre à jour la page avec les données initiales reçues
-              if (typeof chargerIndicateurs === "function") {
-                chargerIndicateurs(data);
-              } else {
-                console.error("La fonction chargerIndicateurs n'existe pas");
-              }
-
-              // 6. Attacher les event listeners sur les filtres (mois/année)
-              if (typeof attacherEventListenersFiltres === "function") {
-                attacherEventListenersFiltres();
-              } else {
-                console.warn("La fonction attacherEventListenersFiltres n'est pas définie");
-              }
+              if (typeof chargerIndicateurs === "function") chargerIndicateurs(data);
+              if (typeof attacherEventListenersFiltres === "function") attacherEventListenersFiltres();
 
             } catch (error) {
               contenu.innerHTML = `<p style="color:red;">Erreur : ${error.message}</p>`;
               console.error(error);
             }
-          }
-
-          
-          else {
-            // Pour les autres pages, utiliser la fonction loadPage habituelle
+          } else {
             await loadPage(page);
           }
         });
       });
 
-      // Sidebar par défaut repliée sur écran large
+
+      // Sidebar collapsed par défaut sur petit écran
       if (window.innerWidth <= 768) {
         sidebar.classList.add("collapsed");
       } else {
         sidebar.classList.remove("collapsed");
       }
 
-      // === Gestion clic "Utilisateurs" ===
-      // utilisateursLink.addEventListener("click", (e) => {
-      //   e.preventDefault();
-      //   console.log("Click sur Utilisateurs détecté");
-      //   setActiveMenu(utilisateursLink);
-
-      //   fetch("Users/technicien.php", {
-      //     headers: {
-      //       "X-Requested-With": "XMLHttpRequest"
-      //     }
-      //   })
-      //   .then(response => {
-      //     console.log("Réponse HTTP :", response.status);
-      //     if (!response.ok) throw new Error("Erreur HTTP " + response.status);
-      //     return response.text();
-      //   })
-      //   .then(data => {
-      //     console.log("Contenu reçu :", data);
-      //     contenu.innerHTML = data;
-      //   })
-      //   .catch(error => {
-      //     console.error("Erreur lors du fetch:", error);
-      //     contenu.innerHTML = `<p style="color:red;">Erreur de chargement : ${error.message}</p>`;
-      //   });
-      // });
-
-    });
-
-    function attacherEventListenersFiltres() {
-        const moisElem = document.getElementById('filterMonth');
-        const anneeElem = document.getElementById('filterYear');
-
-        if (moisElem && anneeElem) {
-            moisElem.addEventListener('change', chargerIndicateurs);
-            anneeElem.addEventListener('change', chargerIndicateurs);
-        }
-    }
-
-    // window.addEventListener('load', () => {
-    //     initializeCache(); // Initialiser le cache en premier
-    //     initialiserCalculs();
-    //     attacherEventListeners();
-        
-    //     initialiserToggleButtons();
-
-    //     // Eventuellement, charger les données initiales au chargement de la page
-    //     // chargerTousLesTaux();
-    // });
-    document.addEventListener("DOMContentLoaded", function () {
+      // Recharge police Material Symbols si absente
       if (!document.fonts.check("24px 'Material Symbols Rounded'")) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded";
         document.head.appendChild(link);
-        console.log("Police Material Symbols rechargée dynamiquement.");
       }
+
+      // Charge la page par défaut au chargement (exemple : SAV)
+      loadPage("SAV");
     });
 
 
+    // //sous menu de Analytics
+    // document.querySelectorAll(".submenu-link").forEach(link => {
+    //   link.addEventListener("click", async (e) => {
+    //     e.preventDefault();
 
+    //     const page = link.dataset.page;
+    //     const contenu = document.getElementById("contenu");
 
-    
+    //     try {
+    //       if (page === "RACC") {
+    //         // Charger HTML RACC
+    //         const htmlResponse = await fetch("Analytics/Analytics-Racc.php");
+    //         if (!htmlResponse.ok) throw new Error(`Erreur chargement Analytics-Racc.php (${htmlResponse.status})`);
+    //         contenu.innerHTML = await htmlResponse.text();
+
+    //         // Injecter CSS RACC
+    //         await injectCSS("Analytics/Analytics-Racc.css");
+
+    //         // Charger données depuis getAnalyticsData.php spécifique à RACC
+    //         const dataResponse = await fetch("Analytics/getAnalyticsData.php", {
+    //           headers: { "X-Requested-With": "XMLHttpRequest" }
+    //         });
+    //         if (!dataResponse.ok) throw new Error(`Erreur chargement des données RACC (${dataResponse.status})`);
+    //         const data = await dataResponse.json();
+
+    //         // Charger script RACC
+    //         await injectScript("Analytics/Analytics-Racc.js", "script-RACC");
+
+    //         // Appeler une fonction d'affichage si elle existe
+    //         if (typeof afficherIndicateurs === "function") {
+    //           afficherIndicateurs(data);
+    //         }
+
+    //       } else if (page === "SAV") {
+    //         // Charger HTML SAV
+    //         const htmlResponse = await fetch("Analytics/Analytics.php");
+    //         if (!htmlResponse.ok) throw new Error(`Erreur chargement Analytics.php (${htmlResponse.status})`);
+    //         contenu.innerHTML = await htmlResponse.text();
+
+    //         // Injecter CSS SAV
+    //         await injectCSS("Analytics/Analytics.css");
+
+    //         // Charger données depuis getAnalyticsData.php pour SAV
+    //         const dataResponse = await fetch("Analytics/getAnalyticsData.php", {
+    //           headers: { "X-Requested-With": "XMLHttpRequest" }
+    //         });
+    //         if (!dataResponse.ok) throw new Error(`Erreur chargement des données SAV (${dataResponse.status})`);
+    //         const data = await dataResponse.json();
+
+    //         // Charger script SAV
+    //         await injectScript("Analytics/Analytics.js", "script-SAV");
+
+    //         // Appeler une fonction d'affichage si elle existe
+    //         if (typeof afficherIndicateurs === "function") {
+    //           afficherIndicateurs(data);
+    //         }
+    //       }
+    //     } catch (error) {
+    //       contenu.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    //     }
+    //   });
+    // });
+
+    // Fonction d'injection JS
+    async function injectScript(src, id) {
+      const oldScript = document.getElementById(id);
+      if (oldScript) oldScript.remove();
+
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.id = id;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error(`Erreur chargement du script ${src}`));
+        document.body.appendChild(script);
+      });
+    }
+
+    // Fonction d'injection CSS
+    function injectCSS(href) {
+      const oldLink = document.getElementById("style-analytics");
+      if (oldLink) oldLink.remove();
+
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.id = "style-analytics";
+      document.head.appendChild(link);
+    }
 
 
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="Analytics/Analytics.js"></script>
 </body>
 </html>

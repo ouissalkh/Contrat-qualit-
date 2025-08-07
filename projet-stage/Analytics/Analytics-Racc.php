@@ -2,16 +2,20 @@
 require_once 'config.php';
 require_once 'indicateurRACC.php';
 
-// Récupérer les valeurs du filtre (mois et année)
-$mois = isset($_GET['mois']) ? $_GET['mois'] : date('m');
-$annee = isset($_GET['annee']) ? $_GET['annee'] : date('Y');
-$semaine = isset($_GET['semaine']) ? $_GET['semaine'] : 'toutes';
+// // Récupérer les valeurs du filtre (mois et année)
+// $mois = isset($_GET['mois']) ? $_GET['mois'] : date('m');
+// $annee = isset($_GET['annee']) ? $_GET['annee'] : date('Y');
+// $semaine = isset($_GET['semaine']) ? $_GET['semaine'] : 'toutes';
 
-// Appel dynamique de la fonction avec filtre
-$taux_cr_ok = calculerTauxCROkGlobal($pdo, $mois, $annee);
-$delai_rdv_sav = calculerTauxDelaiPriseRdv($pdo, $mois, $annee);
-$client_satisfaits = calculerSATCLIRDV_OK($pdo, $mois, $annee);
-$clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois, $annee);
+$mois_courant = (int)date('m');
+$annee_courante = (int)date('Y');
+
+// ✅ Appels avec le mois courant
+$taux_cr_ok = calculerTauxCROkGlobal($pdo, $mois_courant, $annee_courante);
+$delai_rdv_sav = calculerTauxDelaiPriseRdv($pdo, $mois_courant, $annee_courante);
+$client_satisfaits = calculerSATCLIRDV_OK($pdo, $mois_courant, $annee_courante);
+$clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois_courant, $annee_courante);
+
 ?>
 
 
@@ -22,29 +26,9 @@ $clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois, $annee);
     <span class="breadcrumb">/ Analytics</span>
     <span class="page-title">RACC</span>
 
-    <div class="menu-dropdown">
-      <div class="menu-button">
-        <span class="material-symbols-rounded">expand_more</span>
-      </div>
-      <div class="dropdown-menu">
-        <a href="javascript:void(0)" class="submenu-link" data-page="SAV">SAV</a>
-        <a href="javascript:void(0)" class="submenu-link" data-page="Analytics-Racc">RAC</a>
-        
-      </div>
-    </div>
   </div>
 
-  <div class="header-right">
-    <div class="search-box">
-      <i class="fa fa-search"></i>
-      <input type="text" id="searchInput" placeholder="Type here..." oninput="filtrerCartes()" />
-    </div>
-    <div class="signin">
-      <i class="fa fa-user"></i>
-      <span>Sign in</span>
-      <i class="fa fa-cog"></i>
-    </div>
-  </div>
+ 
 </div>
 
 <!-- Cartes d'indicateurs -->
@@ -60,14 +44,14 @@ $clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois, $annee);
     <div class="card-icon">⏱️</div>
     <div class="card-content">
       <h3>Délai prise RDV SAV</h3>
-      <p id="delaiPriseRDV"><?= number_format($delai_rdv_sav, 2, ',', ' ') ?> jours</p>
+      <p id="delaiPriseRDV"><?= number_format($delai_rdv_sav, 2, ',', ' ') ?> %</p>
     </div>
   </div>
   <div class="card">
     <div class="card-icon"> 😊</div>
     <div class="card-content">
       <h3>Client Satisfait</h3>
-      <p id="clientsatisfait"><?= $client_satisfaits ?>%</p>
+      <p id="clientsatisfait"><?= number_format($client_satisfaits , 2, ',', ' ') ?> %</p>
     </div>
   </div>
 
@@ -83,9 +67,24 @@ $clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois, $annee);
 
 <!-- Graphiques -->
 <div class="charts">
-  <!-- <canvas id="barChart"></canvas> -->
-  <canvas id="lineChart"></canvas>
-  <canvas id="pieChart"></canvas>
-</div>
+  <!-- Line Chart Section -->
+  <div class="linechart-container">
+    <div class="chart-header">
+      <label for="filtreIndicateurLine">Filtrer le graphe :</label>
+      <select id="filtreIndicateurLine">
+        <option value="tous">Tous</option>
+        <option value="taux_cr_ok">Taux CR OK</option>
+        <option value="delai_rdv_sav">Délai prise RDV SAV</option>
+        <option value="client_satisfaits">Client Satisfait</option>
+        <option value="clients_insatisfait">Clients insatisfaits</option>
+
+      </select>
+      <button id="btnFiltrerIndicateurLine">Filtrer</button>
+    </div>
+    <canvas id="lineChart" width="500" height="250"></canvas>
+  </div>
+
+ 
+<canvas id="barChart" width="100" height="50"></canvas>
 <div id="mainContent"></div>
 

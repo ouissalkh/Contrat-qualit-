@@ -282,3 +282,71 @@ canvas {
     width: 100px;
   }
 }
+.linechart-container {
+  background: #fdc1c100;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chart-header select,
+.chart-header button {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+.piechart-container {
+  background: #fdc1c100;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chart-header select,
+.chart-header button {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+#btnFiltrerIndicateurLine {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+}
+#btnFiltrerIndicateurPie {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+}
+#filtreIndicateurPie{
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  
+  border: none;
+}
+#filtreIndicateurLine{
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  
+  border: none;
+}

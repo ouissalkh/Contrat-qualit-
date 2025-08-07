@@ -1,4 +1,5 @@
 <?php
+
 // --------------------- CALCUL TAUX DE CR OK GLOBAL ---------------------
 function calculerTauxCROkGlobal(PDO $conn, int $mois, int $annee): float {
     $sql_cr_global_total = "SELECT COUNT(*) as total 
@@ -44,9 +45,18 @@ function calculerTauxDelaiPriseRdv(PDO $conn, int $mois, int $annee): float {
 }
 
 // --------------------- SATCLI OK ---------------------
-function calculerSATCLIRDV_OK(PDO $conn, int $mois, int $annee): int {
+function calculerSATCLIRDV_OK(PDO $conn, int $mois, int $annee): float {
     $sql = "
-        SELECT COUNT(*) AS total_ok
+        SELECT 
+            COUNT(*) AS total_ok,
+            (
+                SELECT COUNT(*) 
+                FROM `SATCLI_SEM_RACC` s2
+                JOIN `racc - taux de cr ok - 1er rdv` r2 
+                    ON s2.`Idnt Ext Interv` = r2.`Lib Ref Erdv`
+                WHERE MONTH(s2.`Date Inter`) = :mois 
+                  AND YEAR(s2.`Date Inter`) = :annee
+            ) AS total
         FROM `SATCLI_SEM_RACC` s
         JOIN `racc - taux de cr ok - 1er rdv` r 
             ON s.`Idnt Ext Interv` = r.`Lib Ref Erdv`
@@ -59,17 +69,29 @@ function calculerSATCLIRDV_OK(PDO $conn, int $mois, int $annee): int {
     $stmt->execute([':mois' => $mois, ':annee' => $annee]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $result['total_ok'] ?? 0;
+    $total_ok = $result['total_ok'] ?? 0;
+    $total = $result['total'] ?? 1;
+
+    return round(($total_ok / $total) * 100, 2);
 }
 
 // --------------------- SATCLI NOK ---------------------
-function calculerSATCLIRDV_NOK(PDO $conn, int $mois, int $annee): int {
+function calculerSATCLIRDV_NOK(PDO $conn, int $mois, int $annee): float {
     $sql = "
-        SELECT COUNT(*) AS total_nok
+        SELECT 
+            COUNT(*) AS total_nok,
+            (
+                SELECT COUNT(*) 
+                FROM `SATCLI_SEM_RACC` s2
+                JOIN `racc - taux de cr ok - 1er rdv` r2 
+                    ON s2.`Idnt Ext Interv` = r2.`Lib Ref Erdv`
+                WHERE MONTH(s2.`Date Inter`) = :mois 
+                  AND YEAR(s2.`Date Inter`) = :annee
+            ) AS total
         FROM `SATCLI_SEM_RACC` s
         JOIN `racc - taux de cr ok - 1er rdv` r 
             ON s.`Idnt Ext Interv` = r.`Lib Ref Erdv`
-        WHERE r.`GRP_STATUT_CRINSTALL_MNT` != 'CR_MNT_OK'
+        WHERE r.`GRP_STATUT_CRINSTALL_MNT` = 'CR_MNT_NOK'
           AND MONTH(s.`Date Inter`) = :mois
           AND YEAR(s.`Date Inter`) = :annee
     ";
@@ -78,5 +100,57 @@ function calculerSATCLIRDV_NOK(PDO $conn, int $mois, int $annee): int {
     $stmt->execute([':mois' => $mois, ':annee' => $annee]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $result['total_nok'] ?? 0;
+    $total_nok = $result['total_nok'] ?? 0;
+    $total = $result['total'] ?? 1;
+
+    return round(($total_nok / $total) * 100, 2);
+}
+
+// --------------------- SOMME EPS ---------------------
+function sommeEPS(PDO $pdo, int $mois, int $annee, string $departement): int {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM `interventions`
+        WHERE 
+            `Statut Intervention` IN ('TERMINEE_OK', 'TERMINEE_KO')
+            AND MONTH(`Date Intervention`) = :mois
+            AND YEAR(`Date Intervention`) = :annee
+            AND `Departement` = :departement
+    ");
+    $stmt->execute([
+        'mois' => $mois,
+        'annee' => $annee,
+        'departement' => $departement
+    ]);
+    return (int)$stmt->fetchColumn();
+}
+
+// bar des histogramme
+// function getTermineesParDepartement(PDO $pdo): array {
+//     $sql = "
+//    SELECT `Code Departement`,
+//     SUM(GRP_STATUT_CRINSTALL_MNT IN ('CR_MNT_OK', 'CR_MNT_DELAI', 'CR_EN_ATTENTE', 'CR_MNT_NOK')) AS total_valides
+//     FROM `racc - taux de cr ok - 1er rdv`
+//     GROUP BY `Code Departement`;
+
+//     ";
+
+//     $stmt = $pdo->prepare($sql);
+//     $stmt->execute();
+//     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+// }
+function getTermineesParDepartement(PDO $pdo): array {
+    $sql = "
+        SELECT 
+            `Code Departement` AS code_dep,
+            SUM(`GRP_STATUT_CRINSTALL_MNT` IN ('CR_MNT_OK', 'CR_MNT_DELAI', 'CR_MNT_NOK', 'CR_EN_ATTENTE')) AS total_valides
+        FROM 
+            `racc - taux de cr ok - 1er rdv`
+        GROUP BY 
+            `Code Departement`
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

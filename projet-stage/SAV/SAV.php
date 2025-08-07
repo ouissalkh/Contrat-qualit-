@@ -166,25 +166,17 @@ v       input.kpi-max {
 
 </head>
 <body>
+ <!--barre de navigation --> 
   <div class="header">
     <div class="header-left">
         <i class="fa fa-home"></i>
         <span class="breadcrumb">/ Contrat Qualité</span>
         <span class="page-title">SAV</span>
 
-        <div class="menu-dropdown">
-            <div class="menu-button">
-                <span class="material-symbols-rounded">expand_more</span>
-            </div>
-            <div class="dropdown-menu">
-                <a href="javascript:void(0)" class="submenu-link" data-page="SAV">SAV</a>
-                <a href="javascript:void(0)" class="submenu-link" data-page="Analytics-Racc">RAC</a>
-                
-            </div>
-        </div>
+        
     </div>
 
-    <div class="header-right">
+    <!-- <div class="header-right">
         <div class="search-box">
         <i class="fa fa-search"></i>
         <input type="text" id="searchInput" placeholder="Type here..." oninput="filtrerCartes()" />
@@ -194,8 +186,9 @@ v       input.kpi-max {
         <span>Sign in</span>
         <i class="fa fa-cog"></i>
         </div>
-    </div>
+    </div> -->
 </div>
+<!-- fin bare de navigation -->
     <!-- <button class="settings-btn" title="Paramètres">
       <span class="material-symbols-rounded">settings</span>
     </button>
