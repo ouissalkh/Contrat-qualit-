@@ -107,23 +107,23 @@ function calculerSATCLIRDV_NOK(PDO $conn, int $mois, int $annee): float {
 }
 
 // --------------------- SOMME EPS ---------------------
-function sommeEPS(PDO $pdo, int $mois, int $annee, string $departement): int {
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM `interventions`
-        WHERE 
-            `Statut Intervention` IN ('TERMINEE_OK', 'TERMINEE_KO')
-            AND MONTH(`Date Intervention`) = :mois
-            AND YEAR(`Date Intervention`) = :annee
-            AND `Departement` = :departement
-    ");
-    $stmt->execute([
-        'mois' => $mois,
-        'annee' => $annee,
-        'departement' => $departement
-    ]);
-    return (int)$stmt->fetchColumn();
-}
+// function sommeEPS(PDO $pdo, int $mois, int $annee, string $departement): int {
+//     $stmt = $pdo->prepare("
+//         SELECT COUNT(*) 
+//         FROM `interventions`
+//         WHERE 
+//             `Statut Intervention` IN ('TERMINEE_OK', 'TERMINEE_KO')
+//             AND MONTH(`Date Intervention`) = :mois
+//             AND YEAR(`Date Intervention`) = :annee
+//             AND `Departement` = :departement
+//     ");
+//     $stmt->execute([
+//         'mois' => $mois,
+//         'annee' => $annee,
+//         'departement' => $departement
+//     ]);
+//     return (int)$stmt->fetchColumn();
+// }
 
 // bar des histogramme
 // function getTermineesParDepartement(PDO $pdo): array {
@@ -139,18 +139,18 @@ function sommeEPS(PDO $pdo, int $mois, int $annee, string $departement): int {
 //     $stmt->execute();
 //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 // }
-function getTermineesParDepartement(PDO $pdo): array {
-    $sql = "
-        SELECT 
-            `Code Departement` AS code_dep,
-            SUM(`GRP_STATUT_CRINSTALL_MNT` IN ('CR_MNT_OK', 'CR_MNT_DELAI', 'CR_MNT_NOK', 'CR_EN_ATTENTE')) AS total_valides
-        FROM 
-            `racc - taux de cr ok - 1er rdv`
-        GROUP BY 
-            `Code Departement`
-    ";
+// function getTermineesParDepartement(PDO $pdo): array {
+//     $sql = "
+//         SELECT 
+//             `Code Departement` AS code_dep,
+//             SUM(`GRP_STATUT_CRINSTALL_MNT` IN ('CR_MNT_OK', 'CR_MNT_DELAI', 'CR_MNT_NOK', 'CR_EN_ATTENTE')) AS total_valides
+//         FROM 
+//             `racc - taux de cr ok - 1er rdv`
+//         GROUP BY 
+//             `Code Departement`
+//     ";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+//     $stmt = $pdo->prepare($sql);
+//     $stmt->execute();
+//     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+// }

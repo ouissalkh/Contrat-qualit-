@@ -85,6 +85,31 @@ $clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois_courant, $annee_courant
   </div>
 
  
-<canvas id="barChart" width="100" height="50"></canvas>
+<!-- <div class="chart-container" style="width: 60%; margin: auto;">
+  <canvas id="pieChartRacc"></canvas>
+</div> -->
+
+<div class="piechart-container" width="450" height="250">
+  <div class="chart-header">
+    <label for="filtreMoisPie">Choisir le mois :</label>
+    <select id="filtreMoisPie">
+      <option value="1">Janvier</option>
+      <option value="2">Février</option>
+      <option value="3">Mars</option>
+      <option value="4">Avril</option>
+      <option value="5">Mai</option>
+      <option value="6">Juin</option>
+      <option value="7">Juillet</option>
+      <option value="8" selected>Août</option> <!-- par exemple le mois courant sélectionné par défaut -->
+      <option value="9">Septembre</option>
+      <option value="10">Octobre</option>
+      <option value="11">Novembre</option>
+      <option value="12">Décembre</option>
+    </select>
+    <button id="btnFiltrerPie">Filtrer</button>
+  </div>
+  <canvas id="pieChartRacc"></canvas>
+</div>
+
 <div id="mainContent"></div>
 

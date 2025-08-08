@@ -2,14 +2,21 @@
 session_start();
 include("php/config.php");
 
+$error = '';
+
 if (isset($_POST['submit'])) {
-    $username = mysqli_real_escape_string($con, $_POST['username']);
-    $password = mysqli_real_escape_string($con, $_POST['password']);
 
-    $result = mysqli_query($con, "SELECT * FROM users WHERE username='$username' AND password='$password'");
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
+    $stmt = $con->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $password); // "ss" = deux strings
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
         $_SESSION['valid'] = $row['username'];
         $_SESSION['username'] = $row['username'];
         $_SESSION['age'] = $row['age'] ?? '';
@@ -18,7 +25,6 @@ if (isset($_POST['submit'])) {
         header("Location: ../index.php");
         exit();
     } else {
-        // Optionnel : tu peux afficher une erreur ici si tu veux
         $error = "Nom d'utilisateur ou mot de passe incorrect.";
     }
 }
@@ -36,7 +42,7 @@ if (isset($_POST['submit'])) {
         <div class="box form-box">
             <header>Connexion</header>
             <form action="" method="post">
-                <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+                <?php if (!empty($error)) echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>"; ?>
                 <div class="field input">
                     <label for="username">Nom d'utilisateur</label>
                     <input type="text" name="username" id="username" required>

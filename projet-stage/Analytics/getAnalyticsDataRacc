@@ -1,0 +1,34 @@
+<?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+require_once 'config.php';
+require_once 'indicateurRACC.php';
+
+$mois = isset($_GET['mois']) ? (int)$_GET['mois'] : (int)date('m');
+$annee = isset($_GET['annee']) ? (int)$_GET['annee'] : (int)date('Y');
+$semaine = $_GET['semaine'] ?? 'toutes';
+
+header('Content-Type: application/json');
+
+try {
+    // Indicateurs uniquement via les fonctions PHP
+    $taux_cr_ok = calculerTauxCROkGlobal($pdo, $mois, $annee);
+    $delai_rdv_sav = calculerTauxDelaiPriseRdv($pdo, $mois, $annee);
+    $client_satisfaits = calculerSATCLIRDV_OK($pdo, $mois, $annee);
+    $clients_insatisfait = calculerSATCLIRDV_NOK($pdo, $mois, $annee);
+
+    // Calcul NOK à partir de OK
+    $taux_cr_nok = 100 - $taux_cr_ok;
+
+    echo json_encode([
+        'taux_cr_ok' => round($taux_cr_ok, 2),
+        'taux_cr_nok' => round($taux_cr_nok, 2),
+        'delai_rdv_sav' => round($delai_rdv_sav, 2),
+        'client_satisfaits' => round($client_satisfaits, 2),
+        'clients_insatisfait' => round($clients_insatisfait, 2)
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
+}

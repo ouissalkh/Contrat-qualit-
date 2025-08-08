@@ -1,21 +1,35 @@
+// Appelle PHP pour récupérer les données et générer le line chart (historique)
+// function fetchDataAndRenderCharts(filtre) {
+//   fetch("/projet-stage/Analytics/getAnalyticsData.php")
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log("Données reçues pour line chart :", data);
+//       // afficherIndicateurs(data); // désactivé pour ne pas toucher aux cartes
+//       genererLineChart(data, filtre);
+//     })
+//     .catch(error => {
+//       console.error("Erreur lors de la récupération des données line chart :", error);
+//     });
+// }
 
-// Appelle PHP pour récupérer les données et générer les graphiques
-function fetchDataAndRenderCharts(filtre) {
-  fetch("/projet-stage/Analytics/getAnalyticsData.php")
+function fetchDataAndRenderCharts(filtre, mois) {
+  // Construire l'URL avec paramètre mois s'il est défini
+  let url = "/projet-stage/Analytics/getAnalyticsData.php";
+  if (mois) {
+    url += "?mois=" + encodeURIComponent(mois);
+  }
+  
+  fetch(url)
     .then(response => response.json())
     .then(data => {
-      console.log("Données reçues :", data);
-      // afficherIndicateurs(data); // ⛔ Supprimé pour ne pas toucher aux cartes
-      genererLineChart(data, filtre);  // ✅ Graphe uniquement
+      console.log("Données reçues pour line chart :", data);
+      genererLineChart(data, filtre);
     })
     .catch(error => {
-      console.error("Erreur lors de la récupération des données :", error);
+      console.error("Erreur lors de la récupération des données line chart :", error);
     });
 }
 
-
-
-// ❌ afficherIndicateurs n’est plus utilisé, mais tu peux le garder si besoin ailleurs
 
 // Génère le graphique en ligne (LineChart)
 function genererLineChart(data, filtre) {
@@ -67,10 +81,7 @@ function genererLineChart(data, filtre) {
     if (window.lineChart instanceof Chart) window.lineChart.destroy();
     window.lineChart = new Chart(lineCtx, {
       type: "line",
-      data: {
-        labels: labels,
-        datasets: datasets
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         plugins: {
@@ -86,57 +97,98 @@ function genererLineChart(data, filtre) {
             max: 100,
             ticks: {
               stepSize: 10,
-              autoSkip: false,      // 🚫 Empêche Chart.js d’ignorer les valeurs intermédiaires
-              callback: function(value) {
-                return value + "%"; // ✅ Affiche 0%, 10%, ... 100% si tu veux, ou juste `return value;`
-              }
+              autoSkip: false,
+              callback: value => value + "%"
             }
           }
         }
-
-
-
       }
     });
   }
 }
 
-// Initialise les filtres
+// Récupère les données pour le pie chart d’un mois donné et génère le graphique
+function fetchPieChartData(mois) {
+  fetch(`/projet-stage/Analytics/getAnalyticsDataRacc.php?mois=${mois}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log("Données reçues pour pie chart :", data);
+      genererPieChartRacc(data);
+      afficherIndicateurs(data); // mise à jour des cartes si besoin
+    })
+    .catch(error => {
+      console.error("Erreur récupération données pie chart :", error);
+    });
+}
+
+// Initialise l’interface, gestion des filtres et boutons
+// function initAnalytics() {
+//   const selectFiltre = document.getElementById("filtreIndicateurLine");
+//   const selectMoisPie = document.getElementById("filtreMoisPie");
+//   const btnFiltrerPie = document.getElementById("btnFiltrerPie");
+//   const btnFiltrerLine = document.getElementById("btnFiltrerIndicateurLine");
+
+//   // Chargement initial line chart (historique)
+//   fetchDataAndRenderCharts("tous");
+
+//   // Chargement initial pie chart avec le mois sélectionné
+//   fetchPieChartData(selectMoisPie.value);
+
+//   // Changement filtre line chart
+//   selectFiltre?.addEventListener("change", () => {
+//     fetchDataAndRenderCharts(selectFiltre.value);
+//   });
+
+//   // Bouton filtrer line chart
+//   btnFiltrerLine?.addEventListener("click", () => {
+//     fetchDataAndRenderCharts(selectFiltre.value);
+//   });
+
+//   // Bouton filtrer pie chart
+//   btnFiltrerPie?.addEventListener("click", () => {
+//     fetchPieChartData(selectMoisPie.value);
+//   });
+
+//   // Charger l’histogramme des départements (bar chart)
+//   chargerHistogrammeDepartements();
+// }
+
 function initAnalytics() {
   const selectFiltre = document.getElementById("filtreIndicateurLine");
+  const selectMoisPie = document.getElementById("filtreMoisPie");
+  const btnFiltrerPie = document.getElementById("btnFiltrerPie");
+  const btnFiltrerLine = document.getElementById("btnFiltrerIndicateurLine");
 
-  fetchDataAndRenderCharts("tous"); // Chargement initial du graphe
-   
+  // Chargement initial line chart avec filtre "tous" et mois sélectionné
+  fetchDataAndRenderCharts("tous", selectMoisPie.value);
 
-  selectFiltre?.addEventListener("change", function () {
-    const filtre = this.value;
-    fetchDataAndRenderCharts(filtre);
+  // Chargement initial pie chart avec le mois sélectionné
+  fetchPieChartData(selectMoisPie.value);
+
+  // Changement filtre line chart (passe aussi le mois sélectionné)
+  selectFiltre?.addEventListener("change", () => {
+    fetchDataAndRenderCharts(selectFiltre.value, selectMoisPie.value);
   });
 
-  const boutonFiltre = document.getElementById("btnFiltrerIndicateurLine");
-  boutonFiltre?.addEventListener("click", function () {
-    const filtre = selectFiltre.value;
-    fetchDataAndRenderCharts(filtre);
+  // Bouton filtrer line chart
+  btnFiltrerLine?.addEventListener("click", () => {
+    fetchDataAndRenderCharts(selectFiltre.value, selectMoisPie.value);
   });
-  // **AJOUTER CETTE LIGNE POUR CHARGER L’HISTOGRAMME**
+
+  // Bouton filtrer pie chart
+  btnFiltrerPie?.addEventListener("click", () => {
+    const mois = selectMoisPie.value;
+    fetchPieChartData(mois);
+    // Si tu veux aussi recharger le line chart avec ce mois:
+    fetchDataAndRenderCharts(selectFiltre.value, mois);
+  });
+
+  // Charger l’histogramme des départements (bar chart)
   chargerHistogrammeDepartements();
 }
 
-// function initAnalytics() {
-//   const selectFiltre = document.getElementById("filtreIndicateurLine");
-//   const boutonFiltre = document.getElementById("btnFiltrerIndicateurLine");
 
-//   // Initialisation
-//   fetchDataAndRenderCharts("tous");
-
-//   // Sur clic du bouton
-//   boutonFiltre?.addEventListener("click", function () {
-//     const filtre = selectFiltre.value;
-//     fetchDataAndRenderCharts(filtre);
-//   });
-// }
-
-// barchart
+// Initialisation et filtrage du bar chart par département
 function initBarChartFiltre() {
   console.log("initBarChartFiltre appelée");
 
@@ -173,6 +225,7 @@ function initBarChartFiltre() {
   updateBarChart();
 }
 
+// Exemple de fonction pour générer un bar chart EPS (à adapter selon tes données)
 function genererBarChartEPS(data) {
   console.log("Data pour Bar Chart :", data);
 
@@ -205,9 +258,9 @@ function genererBarChartEPS(data) {
       scales: {
         y: {
           beginAtZero: true,
-          min:0,
-          max:100,
-          ticks:{
+          min: 0,
+          max: 100,
+          ticks: {
             stepSize: 10
           }
         }
@@ -216,30 +269,7 @@ function genererBarChartEPS(data) {
   });
 }
 
-
-
-//pour le style de menu
-document.addEventListener("DOMContentLoaded", function () {
-  const select = document.getElementById("filtreIndicateurLine");
-
-  function updateSelectStyle() {
-    if (select.value === "tous") {
-      select.classList.add("tous-selected");
-    } else {
-      select.classList.remove("tous-selected");
-    }
-  }
-
-  // Exécuter une fois au chargement
-  updateSelectStyle();
-
-  // Mettre à jour quand l'utilisateur change la sélection
-  select.addEventListener("change", updateSelectStyle);
-});
-
-
-
-// histogramme
+// Charger histogramme départements
 function chargerHistogrammeDepartements() {
   fetch("/projet-stage/Analytics/getAnalyticsData.php?type=departements")
     .then(response => response.json())
@@ -280,4 +310,13 @@ function chargerHistogrammeDepartements() {
     .catch(error => {
       console.error("Erreur lors du chargement de l'histogramme :", error);
     });
+}
+
+// Optionnel : fonction pour afficher/mettre à jour les indicateurs (cartes, etc.)
+function afficherIndicateurs(data) {
+  // Par exemple :
+  // document.getElementById("indicateurCRok").textContent = data.taux_cr_ok + "%";
+  // document.getElementById("indicateurDelaiRDV").textContent = data.delai_rdv_sav + "%";
+  // etc.
+  // Adapter en fonction de ta structure HTML
 }

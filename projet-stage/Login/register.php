@@ -4,8 +4,18 @@ include("php/config.php");
 
 // Vérification de la session et du rôle admin
 if (!isset($_SESSION['valid'])) {
+    header("Location: login.php");
     exit();
 }
+
+$session_timeout = 180; 
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $session_timeout) {
+    session_unset();
+    session_destroy();
+    header("Location: login.php?msg=session_expired");
+    exit();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
 
 $id = intval($_SESSION['id']);
 $query = mysqli_query($con, "SELECT role FROM users WHERE id = $id");

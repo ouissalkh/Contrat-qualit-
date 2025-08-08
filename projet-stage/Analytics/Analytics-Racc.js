@@ -1,48 +1,71 @@
 // document.addEventListener("DOMContentLoaded", function () {
-//   // fetchDataAndRenderCharts("tous");
+//   initAnalytics();
 // });
 
-function fetchDataAndRenderCharts(filtre) {
-  fetch("/projet-stage/Analytics/getAnalyticsDataRacc.php")
-    .then(response => response.text())
-    .then(text => {
-      console.log("Réponse brute reçue :", text);
-      try {
-        const data = JSON.parse(text);
-        console.log("Données JSON parsées :", data);
-        genererLineChart(data, filtre);
-      } catch(e) {
-        console.error("Erreur de parsing JSON :", e);
-        // Affiche aussi le texte complet de la réponse pour debug
-        console.log("Contenu complet reçu (debug):", text);
-      }
-    })
-    .catch(error => {
-      console.error("Erreur lors de la récupération des données RACC :", error);
-    });
+// function fetchDataAndRenderCharts(filtre, mois) {
+//   const url = `/projet-stage/Analytics/getAnalyticsDataRacc.php?mois=${mois}`;
+//   fetch(url)
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log("Données reçues pour line chart :", data);
+//       genererLineChart(data, filtre);
+//       genererPieChartRacc(data);
+//       afficherIndicateurs(data);
+//     })
+//     .catch(error => console.error("Erreur:", error));
+// }
+document.addEventListener("DOMContentLoaded", function () {
+  // Chargement initial cartes + line chart (mois courant, sans paramètre)
+  fetchLineChartAndIndicators();
 
+  // Chargement initial pie chart (mois sélectionné par défaut)
+  const selectMoisPie = document.getElementById("filtreMoisPie");
+  fetchPieChartData(selectMoisPie.value);
+
+  // Filtrer pie chart au clic du bouton
+  document.getElementById("btnFiltrerPie").addEventListener("click", () => {
+    fetchPieChartData(selectMoisPie.value);
+  });
+});
+function fetchDataAndRenderCharts(filtre, mois) {
+  const url = `/projet-stage/Analytics/getAnalyticsDataRacc.php?mois=${mois}`;
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      console.log("Données reçues pour line chart :", data);
+      genererLineChart(data, filtre);
+      genererPieChartRacc(data);
+      afficherIndicateurs(data);
+    })
+    .catch(error => console.error("Erreur:", error));
+}
+function fetchLineChartAndIndicators() {
+  fetch("/projet-stage/Analytics/getAnalyticsDataRacc.php") // pas de paramètre mois
+    .then(res => res.json())
+    .then(data => {
+      genererLineChart(data, "tous");
+      afficherIndicateurs(data);
+    });
 }
 
 
-// function afficherIndicateurs(data) {
-  
-//   const idMapping = {
-//     taux_cr_ok: "tauxCR_OK",
-//     delai_rdv_sav: "delaiPriseRDV",
-//     client_satisfaits: "clientsatisfait",
-//     clients_insatisfait: "clientsTresInsatisfaits"
-//   };
 
+function fetchPieChartData(mois) {
+  fetch(`/projet-stage/Analytics/getAnalyticsDataRacc.php?mois=${mois}`)
+    .then(res => res.json())
+    .then(data => {
+      genererPieChartRacc(data);
+    });
+}
 
-//   for (const key in idMapping) {
-//     const element = document.getElementById(idMapping[key]);
-//     if (element && data[key] !== undefined) {
-//       const value = (key === "delai_rdv_sav") ? `${data[key].toFixed(2)} %` : `${data[key].toFixed(2)}%`;
+const selectFiltre = document.getElementById("filtreIndicateurLine");
+selectFiltre.addEventListener("change", () => {
+  const filtre = selectFiltre.value;
+  if (window.lineChartData) {
+    genererLineChart(window.lineChartData, filtre);
+  }
+});
 
-//       element.textContent = value;
-//     }
-//   }
-// }
 function afficherIndicateurs(data) {
   const idMapping = {
     taux_cr_ok: "tauxCR_OK",
@@ -54,16 +77,9 @@ function afficherIndicateurs(data) {
   for (const key in idMapping) {
     const element = document.getElementById(idMapping[key]);
     if (element && data[key] !== undefined) {
-      let val;
-      if (Array.isArray(data[key])) {
-        // Prendre la dernière valeur du tableau
-        val = data[key][data[key].length - 1];
-      } else {
-        val = data[key];
-      }
-
+      let val = Array.isArray(data[key]) ? data[key][data[key].length - 1] : data[key];
       if (typeof val === "number") {
-        const value = (key === "delai_rdv_sav") ? `${val.toFixed(2)} %` : `${val.toFixed(2)}%`;
+        const value = `${val.toFixed(2)}%`;
         element.textContent = value;
       } else {
         element.textContent = "N/A";
@@ -74,13 +90,50 @@ function afficherIndicateurs(data) {
 }
 
 
-function genererLineChart(data , filtre){
+function genererPieChartRacc(data) {
+  const ctx = document.getElementById("pieChartRacc")?.getContext("2d");
+  if (!ctx) return;
+
+  if (window.pieChartRacc instanceof Chart) {
+    window.pieChartRacc.destroy();
+  }
+
+  // On récupère la dernière valeur des tableaux
+  const dernierTauxOk = Array.isArray(data.taux_cr_ok) ? data.taux_cr_ok[data.taux_cr_ok.length - 1] : data.taux_cr_ok;
+  const dernierTauxNok = 100 - dernierTauxOk;
+
+  window.pieChartRacc = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["CR_MNT_OK (%)", "CR_MNT_NOK (%)"],
+      datasets: [{
+        data: [dernierTauxOk, dernierTauxNok],
+        backgroundColor: ["#007bffff", "#F44336"]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        title: {
+          display: true,
+          text: `Taux CR_MNT_OK / CR_MNT_NOK (${new Date().toLocaleString('fr-FR', { month: 'long', year: 'numeric' })})`
+        }
+      }
+    }
+  });
+}
+
+
+
+
+function genererLineChart(data, filtre) {
   const labels = data.labels;
   const datasets = [];
 
-  if (filtre === "tous" || filtre === "taux_cr_ok"){
+  if (filtre === "tous" || filtre === "taux_cr_ok") {
     datasets.push({
-      label : "Taux CR OK (%)",
+      label: "Taux CR OK (%)",
       data: data.taux_cr_ok,
       borderColor: "#3e95cd",
       fill: false,
@@ -88,9 +141,9 @@ function genererLineChart(data , filtre){
     });
   }
 
-  if (filtre === "tous" || filtre === "delai_rdv_sav"){
+  if (filtre === "tous" || filtre === "delai_rdv_sav") {
     datasets.push({
-      label: "Délai prise RDV SAV(%)",
+      label: "Délai prise RDV SAV (%)",
       data: data.delai_rdv_sav,
       borderColor: "#8e5ea2",
       fill: false,
@@ -98,21 +151,20 @@ function genererLineChart(data , filtre){
     });
   }
 
-  if (filtre === "tous" || filtre ==="client_satisfaits"){
+  if (filtre === "tous" || filtre === "client_satisfaits") {
     datasets.push({
       label: "Satcli OK (%)",
       data: data.client_satisfaits,
       borderColor: "#3cba9f",
-      fill : false,
-      tension: 0.2 
+      fill: false,
+      tension: 0.2
     });
   }
 
-
-  if (filtre === "tous" || filtre === "clients_insatisfait"){
+  if (filtre === "tous" || filtre === "clients_insatisfait") {
     datasets.push({
-      label :"Satcli NOK(%)",
-      data: data.clients_insatisfait ,
+      label: "Satcli NOK (%)",
+      data: data.clients_insatisfait,
       borderColor: "#e8c3b9",
       fill: false,
       tension: 0.2
@@ -120,18 +172,15 @@ function genererLineChart(data , filtre){
   }
 
   const lineCtx = document.getElementById("lineChart")?.getContext("2d");
-  if (lineCtx){
+  if (lineCtx) {
     if (window.lineChart instanceof Chart) window.lineChart.destroy();
-    window.lineChart = new Chart(lineCtx , {
+    window.lineChart = new Chart(lineCtx, {
       type: "line",
-      data: {
-        labels: labels,
-        datasets: datasets
-      },
+      data: { labels: labels, datasets: datasets },
       options: {
-        responsive: true, 
-        plugins : {
-          title : {
+        responsive: true,
+        plugins: {
+          title: {
             display: true,
             text: "Evolution des indicateurs (5 derniers mois)"
           }
@@ -150,252 +199,49 @@ function genererLineChart(data , filtre){
             }
           }
         }
-
       }
     });
   }
-
 }
 
-//Initialise les filtres
-function initAnalytics(){
+function initAnalytics() {
   const selectFiltre = document.getElementById("filtreIndicateurLine");
+  const selectMoisPie = document.getElementById("filtreMoisPie");
+  const btnFiltrerPie = document.getElementById("btnFiltrerPie");
 
   fetchDataAndRenderCharts("tous");
 
-  selectFiltre?.addEventListener("change" ,function(){
-    const filtre= this.value;
+  selectFiltre?.addEventListener("change", function () {
+    const filtre = this.value;
     fetchDataAndRenderCharts(filtre);
   });
-  const boutonFiltre = document.getElementById("btnFiltreIndicateurLine");
-  boutonFiltre?.addEventListener("click",function (){
-    const filtre =selectFiltre.value;
+
+  document.getElementById("btnFiltreIndicateurLine")?.addEventListener("click", function () {
+    const filtre = selectFiltre.value;
     fetchDataAndRenderCharts(filtre);
   });
-  //pour charger l'histogramme
-  chargerHistogrammeDepartements();
-}
 
+  // Chargement initial du pie chart avec mois sélectionné par défaut
+  fetchPieChartData(selectMoisPie.value);
 
-// barchart
-function initBarChartFiltre() {
-  console.log("iniBarChartFiltre appellée");
-
-  const selectDepart = document.getElementById("filtreIndicateurPie");
-  const btnFiltrer = document.getElementById("btnFiltrerIndicateurPie");
-
-
-  if (!selectDepart) console.warn("Select département introuvable");
-  if (!btnFiltrer) console.warn("Bouton filtrer département introuvable");
-
-  const updateBarChart = () => {
-    const departement = selectDepart?.value || "SAV";
-    console.log("Fetch bar chart avec département:", departement);
-    fetch("/projet-stage/Analytics/getAnalyticsDataRacc.php?departement=" + departement)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Data reçue par fetch bar chart (RAcc):", data);
-        genererBarChartEPS(data);
-      })
-      .catch(error => {
-        console.error("Erreur lors du chargement du bar chart :", error);
-      });
-  };
-    btnFiltrer?.addEventListener("click", () => {
-    console.log("Bouton filtrer cliqué");
-    updateBarChart();
-  });
-    selectDepart?.addEventListener("change", () => {
-      console.log("Select département changé");
-      updateBarChart();
-    });
-
-    // Chargement initial
-    updateBarChart();
-}
-
-function genererBarChartEPS(data) {
-  console.log("Data pour Bar Chart :", data);
-
-  const ctx = document.getElementById("barChart")?.getContext("2d");
-  if (!ctx) {
-    console.error("Canvas barChart introuvable");
-    return;
-  }
-
-  if (window.barChart instanceof Chart) window.barChart.destroy();
-
-  window.barChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: data.labels,
-      datasets: [{
-        label: "Nombre EPS",
-        data: data.sommeEPS || [],
-        backgroundColor: "#4e73df"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: "EPS par mois et par département"
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
+  // Au clic sur bouton filtrer pour le pie chart
+  btnFiltrerPie?.addEventListener("click", () => {
+    const moisChoisi = selectMoisPie.value;
+    fetchPieChartData(moisChoisi);
   });
 }
 
 
-
-//pour le style de menu
-document.addEventListener("DOMContentLoaded", function () {
-  const select = document.getElementById("filtreIndicateurLine");
-  initAnalytics(); // ✅ Appelle l'initialisation
-  function updateSelectStyle() {
-    if (select.value === "tous") {
-      select.classList.add("tous-selected");
-    } else {
-      select.classList.remove("tous-selected");
-    }
-  }
-
-  // Exécuter une fois au chargement
-  updateSelectStyle();
-
-  // Mettre à jour quand l'utilisateur change la sélection
-  select.addEventListener("change", updateSelectStyle);
-});
-
-
-
-// histogramme
-function chargerHistogrammeDepartements() {
-  fetch("/projet-stage/Analytics/getAnalyticsDataRacc.php?type=departements")
-    .then(response => response.json())
-    .then(data => {
-      const ctx = document.getElementById("barChart")?.getContext("2d");
-      if (!ctx) return;
-
-      if (window.departementChart instanceof Chart) {
-        window.departementChart.destroy();
-      }
-
-      window.departementChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: "CR",
-            data: data.data,
-            backgroundColor: "#36a2eb"
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: "Nombre d'interventions par département"
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    })
-    .catch(error => {
-      console.error("Erreur lors du chargement de l'histogramme :", error);
-    });
-}
-
-// function genererGraphiques(data) {
-//   const labels = ["Taux CR OK", "Sécurisation RDV", "Délai Prise RDV", "Insatisfaction"];
-//   const valeurs = [
-//     data.tauxCR_OK,
-//     data.securisationRDV,
-//     data.delaiPriseRDV,
-//     data.clientsTresInsatisfaits
-//   ];
-
-//   // Création du lineChart
-//   const lineCtx = document.getElementById("lineChart")?.getContext("2d");
-//   if (lineCtx) {
-//     // (Ici gestion de destruction du chart si besoin)
-//     new Chart(lineCtx, {
-//       type: "line",
-//       data: {
-//         labels: labels,
-//         datasets: [{
-//           label: "Indicateurs du mois courant",
-//           data: valeurs,
-//           borderColor: "#3e95cd",
-//           fill: false,
-//           tension: 0.2
-//         }]
-//       },
-//       options: {
-//         responsive: true,
-//         plugins: {
-//           title: { display: true, text: 'Évolution des indicateurs - Mois courant' }
-//         },
-//         scales: { y: { beginAtZero: true } }
-//       }
+// fonction dédiée pour le pie chart avec un paramètre mois
+// function fetchPieChartData(mois) {
+//   // Appelle le PHP en envoyant le mois en GET
+//   fetch(`/projet-stage/Analytics/getAnalyticsDataRacc.php?mois=${mois}`)
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log("Données reçues pour pie chart :", data);
+//       genererPieChartRacc(data);
+//     })
+//     .catch(error => {
+//       console.error("Erreur récupération données pie chart :", error);
 //     });
-//   }
-
-//   // Création du pieChart
-//   const pieCtx = document.getElementById("pieChart")?.getContext("2d");
-//   if (pieCtx) {
-//     new Chart(pieCtx, {
-//       type: "pie",
-//       data: {
-//         labels: labels,
-//         datasets: [{
-//           data: valeurs,
-//           backgroundColor: ["#4CAF50", "#2196F3", "#FFC107", "#F44336"]
-//         }]
-//       },
-//       options: {
-//         responsive: true,
-//         plugins: {
-//           title: { display: true, text: 'Répartition des indicateurs' }
-//         }
-//       }
-//     });
-//   }
 // }
-// document.querySelectorAll('.submenu-link').forEach(link => {
-//   link.addEventListener('click', e => {
-//     const page = e.target.dataset.page;
-//     let url = '';
-
-//     if (page === 'Analytics-Racc') {
-//       url = 'Analytics-Racc.php';
-//     } else if (page === 'SAV') {
-//       url = 'SAV.php';
-//     }
-
-//     if (url) {
-//       fetch(url)
-//         .then(res => res.text())
-//         .then(html => {
-//           const mainContent = document.getElementById('mainContent');
-//           if (mainContent) {
-//             mainContent.innerHTML = html;  // Remplace le contenu affiché
-//           }
-//         })
-//         .catch(err => console.error('Erreur chargement page:', err));
-//     }
-
-//   });
-// });

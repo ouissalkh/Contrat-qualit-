@@ -4,7 +4,7 @@ session_start();
 include("php/config.php");
 
 if (!isset($_SESSION['valid'])) {
-    header("Location: index.php");
+    header("Location: login/login.php");
     exit();
 }
 
@@ -270,8 +270,7 @@ a.edit-icon:hover {
             <i class="fas fa-caret-down"></i>
         </button>
         <div x-show="open" @click.outside="open = false" x-transition class="dropdown-menu">
-            <a href="#">Profile</a>
-            <a href="#">Logs</a>
+            <a href="home.php">Profile</a>
             <div style="border-top:1px solid #ddd; margin:5px 0;"></div>
             <a href="php/logout.php" style="color: red;">Logout</a>
         </div>

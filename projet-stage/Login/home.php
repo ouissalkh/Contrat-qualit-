@@ -1,11 +1,22 @@
 <?php
 session_start();
-include("php/config.php");
+include("php/config.php");  
 
+// Sécurité session
 if (!isset($_SESSION['valid'])) {
-    header("Location: index.php");
+    header("Location: login.php");
     exit();
 }
+
+$session_timeout = 360;
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $session_timeout) {
+    session_unset();
+    session_destroy();
+    header("Location: login.php?msg=session_expired");
+    exit();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+
 
 $id = intval($_SESSION['id']);
 $message = "";
@@ -30,7 +41,7 @@ if ($message !== "Votre compte a été supprimé avec succès.") {
         $res_role = $result['role'];
     } else {
         session_destroy();
-        header("Location: index.php");
+        header("Location: login.php");
         exit();
     }
 }
@@ -154,7 +165,7 @@ if ($message !== "Votre compte a été supprimé avec succès.") {
         </a>
     </div>
     <div class="right-links" style="display: flex; gap: 10px;">
-        <a href="edit.php?Id=<?php echo $res_id; ?>">Changer profil</a>
+        <a href="edit.php?Id=<?php echo $res_id; ?>">Modifier profile</a>
         <a href="php/logout.php"><button class="btn">Se déconnecter</button></a>
     </div>
 </div>
@@ -191,6 +202,9 @@ if ($message !== "Votre compte a été supprimé avec succès.") {
         <?php if ($res_role === 'admin' ) : ?>
             <form action="delete.php" method="get" style="display:inline;">
                 <button type="submit" class="btn btn-success">Gérer les utilisateurs</button>
+            </form>
+            <form action="technicien.php" method="get" style="display:inline;">
+                <button type="submit" class="btn btn-success">Consulter les techniciens</button>
             </form>
             <form action="cards.php" method="get" style="display:inline;">
                 <button type="submit" class="btn btn-success">Cardes</button>

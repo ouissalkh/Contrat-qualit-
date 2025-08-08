@@ -21,7 +21,7 @@ if (!isset($_SESSION['valid']) || !isset($_SESSION['id'])) {
         <div class="box">
             <h1>Accès refusé</h1>
             <p>Vous devez être connecté pour accéder à cette page.</p>
-            <p><a href="index.php">Retour à la page de connexion</a></p>
+            <p><a href="login.php">Retour à la page de connexion</a></p>
         </div>
     </body>
     </html>';
@@ -253,7 +253,7 @@ button:hover {
             <label>Rôle</label>
             <select name="role" required>
                 <option value="user" <?php if ($userData['role']=='user') echo 'selected'; ?>>Utilisateur</option>
-                <option value="semi-admin" <?php if ($userData['role']=='semi-admin') echo 'selected'; ?>>Semi-admin</option>
+                <option value="manager" <?php if ($userData['role']=='manager') echo 'selected'; ?>>Manager</option>
                 <option value="admin" <?php if ($userData['role']=='admin') echo 'selected'; ?>>Admin</option>
             </select>
         </div>

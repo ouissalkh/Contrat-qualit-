@@ -4,7 +4,7 @@ include("php/config.php");
 
 // Check login
 if(!isset($_SESSION['valid'])){
-    header("Location: index.php");
+    header("Location: login.php");
     exit();
 }
 

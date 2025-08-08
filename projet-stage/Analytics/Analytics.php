@@ -16,19 +16,12 @@ require_once 'indicateurs.php';
 $mois_courant = (int)date('m');
 $annee_courante = (int)date('Y');
 
-if ($mois_courant === 1) {
-    $mois_precedent = 12;
-    $annee_precedente = $annee_courante - 1;
-} else {
-    $mois_precedent = $mois_courant - 1;
-    $annee_precedente = $annee_courante;
-}
 
 // Appel des fonctions avec mois et année précédents
-$taux_cr_ok = tauxCR_OK($pdo, $mois_precedent, $annee_precedente);
-$delai_rdv_sav = DelaiPriseRDVSAV($pdo, $mois_precedent, $annee_precedente);
-$secu_rdv_sav = SecuRDVSAV($pdo, $mois_precedent, $annee_precedente);
-$clients_tres_insatisfait = clientsTresInsatisfaits($pdo, $mois_precedent, $annee_precedente);
+$taux_cr_ok = tauxCR_OK($pdo, $mois_courant, $annee_courante);
+$delai_rdv_sav = DelaiPriseRDVSAV($pdo, $mois_courant, $annee_courante);
+$secu_rdv_sav = SecuRDVSAV($pdo, $mois_courant,$annee_courante);
+$clients_tres_insatisfait = clientsTresInsatisfaits($pdo, $mois_courant, $annee_courante);
 ?>
 
 
